@@ -74,5 +74,17 @@ body {
 /* #middleSide {
 } */
 
+#mainInput {
+  display: block;
+  margin: 0;
+  opacity: 0;
+  border: none;
+  outline: none;
+  resize: none;
+  position: fixed;
+  z-index: -1;
+  cursor: default;
+}
+
 /* #bottomSide {
 } */

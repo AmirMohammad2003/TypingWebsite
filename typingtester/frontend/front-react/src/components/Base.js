@@ -29,7 +29,7 @@ export default () => {
               <Outlet />
             </div>
 
-            <div id="bottomSide">{/* todo */}</div>
+            <div id="bottomSide">{/* TODO */}</div>
           </div>
         </div>
       </Container>

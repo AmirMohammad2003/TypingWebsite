@@ -3,6 +3,7 @@ import { CircularProgress } from "@mui/material";
 import getQuote from "../lookups/lookups";
 
 const Word = ({ word, wordState, cursor }) => {
+  console.log(wordState);
   let cursor_index = -2;
   if (cursor === true) {
     cursor_index = word.length === wordState.length ? -1 : wordState.length;
@@ -26,7 +27,20 @@ const Word = ({ word, wordState, cursor }) => {
           </span>
         );
       })}
-      <span className={cursor_index === -1 ? " cursor" : ""}>&nbsp;</span>
+      {(wordState.length > word.length && (
+        <>
+          {[...wordState].map((letter, index) => {
+            if (index >= word.length) {
+              return (
+                <span key={index} className="extra">
+                  {letter}
+                </span>
+              );
+            }
+          })}
+          <span className={cursor ? "cursor" : ""}>&nbsp;</span>
+        </>
+      )) || <span className={cursor_index === -1 ? "cursor" : ""}>&nbsp;</span>}
     </div>
   );
 };
@@ -35,9 +49,12 @@ export default () => {
   const [typingState, setTypingState] = useState([[], {}]);
   const [dontFocus, setDontfocus] = useState(false);
   const [any, forceUpdate] = useReducer((num) => num + 1, 0);
+
   const words_typed = useRef(0);
-  const letters_typed = useRef(0);
+  const [status, setStatus] = useRef(0); // 0 --> not started, 1 --> has started, 2 --> ended
+  // const letters_typed = useRef(0);
   const mainInput = useRef(null);
+  const errors = useRef(0);
 
   useEffect(async () => {
     let quote = await getQuote().then((_res) => JSON.parse(_res));
@@ -57,6 +74,7 @@ export default () => {
   }, [mainInput]);
 
   const handleTyping = (e) => {
+    if (status === 0)
     let value = e.target.value;
     let newState = typingState;
     if (value.charAt(value.length - 1) === " ") {
@@ -68,10 +86,11 @@ export default () => {
         if (words_typed.current === typingState[1]["words"].length) {
           console.log("Dont focus enabled");
           mainInput.current.blur();
+          mainInput.current.disabled = true;
           setDontfocus(true);
         }
       }
-      letters_typed.current = 0;
+      // letters_typed.current = 0;
     } else {
       if (
         words_typed.current + 1 === typingState[1]["words"].length &&
@@ -79,13 +98,25 @@ export default () => {
       ) {
         newState[0][words_typed.current] = value;
         words_typed.current = words_typed.current + 1;
-        console.log("Dont focus enabled _2_");
+        e.target.value = "";
+        console.log("Dont focus enabled 2");
         mainInput.current.blur();
+        mainInput.current.disabled = true;
         setDontfocus(true);
       } else {
+        if (value.length > newState[0][words_typed.current].length) {
+          if (value.length > newState[1]["words"][words_typed.current].length) {
+            errors.current += 1;
+          } else if (
+            value.charAt(value.length - 1) !==
+            newState[1]["words"][words_typed.current].charAt(value.length - 1)
+          ) {
+            errors.current += 1;
+          }
+        }
         newState[0][words_typed.current] = value;
       }
-      letters_typed.current = value.length;
+      // letters_typed.current = value.length;
       setTypingState(newState);
     }
     console.log(words_typed.current);
@@ -98,8 +129,10 @@ export default () => {
         <>
           <div id="detail-board">
             <div className="detail">
-              {words_typed.current} / {typingState[1]["words"].length}
+              {words_typed.current}/{typingState[1]["words"].length}
             </div>
+            &nbsp;&nbsp;
+            <div className="detail">Errors: {errors.current}</div>
           </div>
           <div id="word-wrapper" style={{ color: "#616161" }}>
             {words.map((word, index) => (

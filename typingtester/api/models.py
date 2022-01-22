@@ -13,9 +13,9 @@ class QuoteManager(models.Manager):
 
 class Quote(models.Model):
     content = models.TextField()
-    # todo: length
-    # todo: source
-    # todo: the user who submitted the quote
+    # TODO: length
+    # TODO: source
+    # TODO: the user who submitted the quote
 
     randoms = QuoteManager()
 

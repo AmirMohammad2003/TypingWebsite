@@ -87,6 +87,7 @@ body {
 }
 
 .detail {
+  display: inline-block;
   color: #f66e0d;
   font-size: 1.5em;
   font-weight: bold;
@@ -104,10 +105,10 @@ body {
 
 @keyframes animated_cursor {
   from {
-    border-left: 1px solid #f66e0d;
+    border-left: 2px solid #f66e0d;
   }
   to {
-    border-left: 1px solid transparent;
+    border-left: 2px solid transparent;
   }
 }
 
@@ -121,6 +122,10 @@ body {
 
 .wrongChar {
   color: #ff1717;
+}
+
+.extra {
+  color: #ef3f3f;
 }
 
 /* #bottomSide {

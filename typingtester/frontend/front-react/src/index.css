@@ -5,7 +5,7 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: Consolas, "Courier New", monospace;
+  font-family: "Roboto mono", Consolas, "Courier New", monospace;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #313131;
@@ -84,6 +84,37 @@ body {
   position: fixed;
   z-index: -1;
   cursor: default;
+}
+
+#word-wrapper {
+  line-height: 2;
+  /* letter-spacing: 1px; */
+  font-size: 1.5em;
+}
+
+.cursor {
+  animation: animated_cursor 2s 0s infinite;
+}
+
+@keyframes animated_cursor {
+  from {
+    border-left: 1px solid #f66e0d;
+  }
+  to {
+    border-left: 1px solid transparent;
+  }
+}
+
+.word {
+  display: inline-block;
+}
+
+.correctChar {
+  color: #f5e6c8;
+}
+
+.wrongChar {
+  color: #ff1717;
 }
 
 /* #bottomSide {

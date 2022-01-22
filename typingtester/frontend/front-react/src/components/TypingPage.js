@@ -93,19 +93,25 @@ export default () => {
   };
 
   const renderWords = (words) => {
-    // TODO: implement the cursor
     if (words !== undefined) {
       return (
-        <div id="word-wrapper" style={{ color: "#616161" }}>
-          {words.map((word, index) => (
-            <Word
-              key={index}
-              word={word}
-              wordState={typingState[0][index]}
-              cursor={words_typed.current === index}
-            />
-          ))}
-        </div>
+        <>
+          <div id="detail-board">
+            <div className="detail">
+              {words_typed.current} / {typingState[1]["words"].length}
+            </div>
+          </div>
+          <div id="word-wrapper" style={{ color: "#616161" }}>
+            {words.map((word, index) => (
+              <Word
+                key={index}
+                word={word}
+                wordState={typingState[0][index]}
+                cursor={words_typed.current === index}
+              />
+            ))}
+          </div>
+        </>
       );
     }
   };
@@ -127,9 +133,6 @@ export default () => {
         }}
         onChange={handleTyping}
       />
-      <div id="detail-board">
-        <div> {/* TODO: words typed */}</div>
-      </div>
       <br />
       {(typingState[1] && renderWords(typingState[1]["words"])) || (
         <div className="center-flex">

@@ -1,6 +1,7 @@
 import React from "react";
 import { Container } from "@mui/material";
 import { Outlet } from "react-router-dom";
+import { IconButtonLink } from "./smallComponents";
 
 export default () => {
   return (

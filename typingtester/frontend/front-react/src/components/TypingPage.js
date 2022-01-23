@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect, useReducer } from "react";
 import { CircularProgress } from "@mui/material";
 import getQuote from "../lookups/lookups";
-import { calculateWpmCpm, calculateAccuracy } from "../util";
 
 import Word from "./Word";
+import Results from "./Results";
 
 import { IconButtonWithPopup } from "./smallComponents";
 
@@ -98,39 +98,6 @@ export default () => {
     forceUpdate();
   };
 
-  const renderResults = () => {
-    let [cpm, wpm] = calculateWpmCpm(
-      start_time.current,
-      end_time.current,
-      letters_typed.current - errors.current
-    );
-    let acc = calculateAccuracy(letters_typed.current, errors.current);
-    // console.log(cpm);
-    // console.log(wpm);
-    // console.log(acc);
-    console.log("LettersTyped: " + letters_typed.current);
-    console.log("Errors: " + errors.current);
-    return (
-      <>
-        <div id="detail-board" className="popup-animation">
-          <div className="detail">WPM: {wpm}</div>&nbsp;&nbsp;
-          <div className="detail">CPM: {cpm}</div>&nbsp;&nbsp;
-          <div className="detail">ACC: {acc}%</div>&nbsp;&nbsp;
-          <div className="detail">
-            Time:{" "}
-            {(end_time.current - start_time.current).toFixed(2).toString()}s
-          </div>
-        </div>
-        <div className="center-flex">
-          <IconButtonWithPopup
-            iconClass="fa-rotate-right"
-            popupText="Refresh Test"
-          />
-        </div>
-      </>
-    );
-  };
-
   const renderDetails = () => {
     return (
       <>
@@ -174,12 +141,6 @@ export default () => {
           {renderWords(words)}
           <br />
           <div className="center-flex" style={{ height: "16px" }}>
-            {/* <a href="/" className="popup">
-              <i className="fas fa-rotate-right btn-generic"></i>
-              <span className="popuptext" id="myPopup">
-                Refresh Test
-              </span>
-            </a> */}
             <IconButtonWithPopup
               iconClass="fa-rotate-right"
               popupText="Refresh Test"
@@ -208,7 +169,14 @@ export default () => {
         onChange={handleTyping}
       />
       <br />
-      {(status.current === 2 && renderResults(typingState[1]["words"])) ||
+      {(status.current === 2 && (
+        <Results
+          start_time={start_time.current}
+          end_time={end_time.current}
+          errors={errors.current}
+          letters_typed={letters_typed.current}
+        />
+      )) ||
         (typingState[1] && renderTestingArea(typingState[1]["words"])) || (
           <div className="center-flex">
             <CircularProgress />

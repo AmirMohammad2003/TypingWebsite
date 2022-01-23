@@ -86,11 +86,19 @@ body {
   cursor: default;
 }
 
+#detail-board {
+  transition: opacity 0.3s;
+}
+
 .detail {
   display: inline-block;
   color: #f66e0d;
   font-size: 1.5em;
   font-weight: bold;
+}
+
+.hidden {
+  opacity: 0;
 }
 
 #word-wrapper {
@@ -125,7 +133,7 @@ body {
 }
 
 .extra {
-  color: #ef3f3f;
+  color: #ef3f3f80;
 }
 
 /* #bottomSide {

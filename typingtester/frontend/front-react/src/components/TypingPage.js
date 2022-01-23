@@ -51,7 +51,7 @@ export default () => {
   const [any, forceUpdate] = useReducer((num) => num + 1, 0);
 
   const words_typed = useRef(0);
-  const [status, setStatus] = useRef(0); // 0 --> not started, 1 --> has started, 2 --> ended
+  const status = useRef(0); // 0 --> not started, 1 --> has started, 2 --> ended
   // const letters_typed = useRef(0);
   const mainInput = useRef(null);
   const errors = useRef(0);
@@ -74,7 +74,9 @@ export default () => {
   }, [mainInput]);
 
   const handleTyping = (e) => {
-    if (status === 0)
+    if (status.current === 0) {
+      status.current = 1;
+    }
     let value = e.target.value;
     let newState = typingState;
     if (value.charAt(value.length - 1) === " ") {
@@ -87,6 +89,7 @@ export default () => {
           console.log("Dont focus enabled");
           mainInput.current.blur();
           mainInput.current.disabled = true;
+          status.current = 2;
           setDontfocus(true);
         }
       }
@@ -102,6 +105,7 @@ export default () => {
         console.log("Dont focus enabled 2");
         mainInput.current.blur();
         mainInput.current.disabled = true;
+        status.current = 2;
         setDontfocus(true);
       } else {
         if (value.length > newState[0][words_typed.current].length) {
@@ -123,27 +127,44 @@ export default () => {
     forceUpdate();
   };
 
+  const renderDetails = () => {
+    return (
+      <>
+        <div id="detail-board" className={status.current === 0 ? "hidden" : ""}>
+          <div className="detail">
+            {words_typed.current}/{typingState[1]["words"].length}
+          </div>
+          &nbsp;&nbsp;
+          <div className="detail">Errors: {errors.current}</div>
+        </div>
+      </>
+    );
+  };
+
   const renderWords = (words) => {
+    return (
+      <>
+        <div id="word-wrapper" style={{ color: "#616161" }}>
+          {words.map((word, index) => (
+            <Word
+              key={index}
+              word={word}
+              wordState={typingState[0][index]}
+              cursor={words_typed.current === index}
+            />
+          ))}
+        </div>
+      </>
+    );
+  };
+
+  const renderTestingArea = (words) => {
+    console.log(status.current);
     if (words !== undefined) {
       return (
         <>
-          <div id="detail-board">
-            <div className="detail">
-              {words_typed.current}/{typingState[1]["words"].length}
-            </div>
-            &nbsp;&nbsp;
-            <div className="detail">Errors: {errors.current}</div>
-          </div>
-          <div id="word-wrapper" style={{ color: "#616161" }}>
-            {words.map((word, index) => (
-              <Word
-                key={index}
-                word={word}
-                wordState={typingState[0][index]}
-                cursor={words_typed.current === index}
-              />
-            ))}
-          </div>
+          {renderDetails()}
+          {renderWords(words)}
         </>
       );
     }
@@ -167,7 +188,7 @@ export default () => {
         onChange={handleTyping}
       />
       <br />
-      {(typingState[1] && renderWords(typingState[1]["words"])) || (
+      {(typingState[1] && renderTestingArea(typingState[1]["words"])) || (
         <div className="center-flex">
           <CircularProgress />
         </div>

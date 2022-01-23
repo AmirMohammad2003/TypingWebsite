@@ -24,6 +24,9 @@ const getQuote = () => {
         resolve(xhr.response);
       }
     };
+    xhr.onerror = () => {
+      alert("Error");
+    };
     xhr.open("GET", "http://localhost:8000/api/load");
     xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     xhr.setRequestHeader("HTTP_X_REQUESTED_WITH", "XMLHttpRequest");

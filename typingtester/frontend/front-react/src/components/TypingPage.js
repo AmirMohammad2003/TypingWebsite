@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useReducer } from "react";
 import { CircularProgress } from "@mui/material";
 import getQuote from "../lookups/lookups";
+import { calculateWpmCpm, calculateAccuracy } from "../util";
 
 const Word = ({ word, wordState, cursor }) => {
   console.log(wordState);
@@ -51,8 +52,10 @@ export default () => {
   const [any, forceUpdate] = useReducer((num) => num + 1, 0);
 
   const words_typed = useRef(0);
+  const start_time = useRef(new Date().getTime() / 1000);
+  const end_time = useRef(0);
   const status = useRef(0); // 0 --> not started, 1 --> has started, 2 --> ended
-  // const letters_typed = useRef(0);
+  const letters_typed = useRef(0); // including bad ones O_o
   const mainInput = useRef(null);
   const errors = useRef(0);
 
@@ -74,6 +77,7 @@ export default () => {
   }, [mainInput]);
 
   const handleTyping = (e) => {
+    var end = 0;
     if (status.current === 0) {
       status.current = 1;
     }
@@ -83,14 +87,11 @@ export default () => {
       if (value.length === 1) {
         e.target.value = "";
       } else {
-        words_typed.current = words_typed.current + 1;
+        words_typed.current += 1;
+        letters_typed.current += 1;
         e.target.value = "";
         if (words_typed.current === typingState[1]["words"].length) {
-          console.log("Dont focus enabled");
-          mainInput.current.blur();
-          mainInput.current.disabled = true;
-          status.current = 2;
-          setDontfocus(true);
+          end = 1;
         }
       }
       // letters_typed.current = 0;
@@ -102,13 +103,10 @@ export default () => {
         newState[0][words_typed.current] = value;
         words_typed.current = words_typed.current + 1;
         e.target.value = "";
-        console.log("Dont focus enabled 2");
-        mainInput.current.blur();
-        mainInput.current.disabled = true;
-        status.current = 2;
-        setDontfocus(true);
+        end = 1;
       } else {
         if (value.length > newState[0][words_typed.current].length) {
+          letters_typed.current += 1;
           if (value.length > newState[1]["words"][words_typed.current].length) {
             errors.current += 1;
           } else if (
@@ -123,8 +121,41 @@ export default () => {
       // letters_typed.current = value.length;
       setTypingState(newState);
     }
+
+    if (end) {
+      console.log("Dont focus enabled");
+      mainInput.current.blur();
+      mainInput.current.disabled = true;
+      status.current = 2;
+      setDontfocus(true);
+      end_time.current = new Date().getTime() / 1000;
+    }
     console.log(words_typed.current);
     forceUpdate();
+  };
+
+  const renderResults = (words) => {
+    let [cpm, wpm] = calculateWpmCpm(
+      start_time.current,
+      end_time.current,
+      words
+    );
+    let acc = calculateAccuracy(letters_typed.current, errors.current);
+    console.log(cpm);
+    console.log(wpm);
+    return (
+      <div id="detail-board" className="popup-animation">
+        <div className="detail">WPM: {wpm}</div>
+        <br />
+        <div className="detail">CPM: {cpm}</div>
+        <br />
+        <div className="detail">ACC: {acc}</div>
+        <br />
+        <div className="detail">
+          Time: {(end_time.current - start_time.current).toFixed(2).toString()}s
+        </div>
+      </div>
+    );
   };
 
   const renderDetails = () => {
@@ -188,11 +219,13 @@ export default () => {
         onChange={handleTyping}
       />
       <br />
-      {(typingState[1] && renderTestingArea(typingState[1]["words"])) || (
-        <div className="center-flex">
-          <CircularProgress />
-        </div>
-      )}
+      {(status.current === 2 && renderResults(typingState[1]["words"])) ||
+        (typingState[1] && renderTestingArea(typingState[1]["words"])) || (
+          <div className="center-flex">
+            <CircularProgress />
+          </div>
+        )}
+      <br />
     </>
   );
 };

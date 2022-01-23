@@ -8,6 +8,8 @@ import {
 import Base from "./components/Base";
 import TypingPage from "./components/TypingPage";
 
+// testContext = createContext()
+
 const App = () => {
   return (
     <>

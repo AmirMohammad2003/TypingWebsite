@@ -2,6 +2,17 @@ import { calculateWpmCpm, calculateAccuracy } from "../util";
 import { IconButtonWithPopup } from "./smallComponents";
 import { Grid } from "@mui/material";
 
+const ResultBox = ({ _key, value }) => {
+  return (
+    <>
+      <div className="detail">
+        <div className="result-key">{_key}</div>
+        <div className="result-value">{value}</div>
+      </div>
+    </>
+  );
+};
+
 const Results = ({ start_time, end_time, errors, letters_typed }) => {
   let [cpm, wpm] = calculateWpmCpm(
     start_time,
@@ -16,18 +27,19 @@ const Results = ({ start_time, end_time, errors, letters_typed }) => {
       <div id="detail-board" className="popup-animation">
         <Grid container spacing={1}>
           <Grid item xs={3} align="center">
-            <div className="detail">WPM: {wpm}</div>
+            <ResultBox _key="WPM" value={wpm} />
           </Grid>
           <Grid item xs={3} align="center">
-            <div className="detail">CPM: {cpm}</div>&nbsp;&nbsp;
+            <ResultBox _key="CPM" value={cpm} />
           </Grid>
           <Grid item xs={3} align="center">
-            <div className="detail">ACC: {acc}%</div>&nbsp;&nbsp;
+            <ResultBox _key="ACC" value={acc + "%"} />
           </Grid>
           <Grid item xs={3} align="center">
-            <div className="detail">
-              Time: {(end_time - start_time).toFixed(2).toString()}s
-            </div>
+            <ResultBox
+              _key="Time"
+              value={(end_time - start_time).toFixed(2).toString() + "s"}
+            />
           </Grid>
         </Grid>
       </div>

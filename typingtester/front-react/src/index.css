@@ -141,6 +141,20 @@ body {
   color: #ef3f3f80;
 }
 
+.result-key {
+  letter-spacing: 2px;
+  color: #616161;
+  font-size: 24pt;
+  margin-bottom: -20px;
+}
+
+.result-value {
+  color: #f66e0d;
+  font-size: 60pt;
+  font-weight: 100;
+  letter-spacing: -6px;
+}
+
 /* #bottomSide {
 } */
 

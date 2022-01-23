@@ -10,27 +10,27 @@ import { IconButtonWithPopup } from "./smallComponents";
 export default () => {
   const [typingState, setTypingState] = useState([[], {}]);
   const [dontFocus, setDontfocus] = useState(false);
-  const [any, forceUpdate] = useReducer((num) => num + 1, 0);
 
   const words_typed = useRef(0);
+  const letters_typed = useRef(0); // including bad ones O_o, excluding spaces
+  const errors = useRef(0);
+
   const start_time = useRef(0);
   const end_time = useRef(0);
+
   const status = useRef(0); // 0 --> not started, 1 --> has started, 2 --> ended
-  const letters_typed = useRef(0); // including bad ones O_o, excluding spaces
+
   const mainInput = useRef(null);
-  const errors = useRef(0);
+
+  const [any, forceUpdate] = useReducer((num) => num + 1, 0);
 
   useEffect(async () => {
     let quote = await getQuote().then((_res) => JSON.parse(_res));
-    setTimeout(() => {
-      let ts = [];
-      // console.log(quote);
-      for (let i = 0; i < quote["words"].length; i++) {
-        ts.push("");
-      }
-      // console.log(ts);
-      setTypingState([ts, quote]);
-    }, 1000);
+    let ts = [];
+    for (let i = 0; i < quote["words"].length; i++) {
+      ts.push("");
+    }
+    setTypingState([ts, quote]);
   }, []);
 
   useEffect(() => {

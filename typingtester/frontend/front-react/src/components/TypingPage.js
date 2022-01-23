@@ -52,7 +52,7 @@ export default () => {
   const [any, forceUpdate] = useReducer((num) => num + 1, 0);
 
   const words_typed = useRef(0);
-  const start_time = useRef(new Date().getTime() / 1000);
+  const start_time = useRef(0);
   const end_time = useRef(0);
   const status = useRef(0); // 0 --> not started, 1 --> has started, 2 --> ended
   const letters_typed = useRef(0); // including bad ones O_o
@@ -80,6 +80,7 @@ export default () => {
     var end = 0;
     if (status.current === 0) {
       status.current = 1;
+      start_time.current = new Date().getTime() / 1000;
     }
     let value = e.target.value;
     let newState = typingState;
@@ -143,13 +144,14 @@ export default () => {
     let acc = calculateAccuracy(letters_typed.current, errors.current);
     console.log(cpm);
     console.log(wpm);
+    console.log(acc);
     return (
       <div id="detail-board" className="popup-animation">
         <div className="detail">WPM: {wpm}</div>
         <br />
         <div className="detail">CPM: {cpm}</div>
         <br />
-        <div className="detail">ACC: {acc}</div>
+        <div className="detail">ACC: {acc}%</div>
         <br />
         <div className="detail">
           Time: {(end_time.current - start_time.current).toFixed(2).toString()}s

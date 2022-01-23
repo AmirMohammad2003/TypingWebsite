@@ -69,6 +69,11 @@ body {
   text-decoration: none;
   color: #616161;
   padding: 10px;
+  transition: color 0.3s;
+}
+
+.button-link:hover {
+  color: #cac5c5;
 }
 
 /* #middleSide {

@@ -1,10 +1,5 @@
-const calculateWpmCpm = (start, end, words) => {
+const calculateWpmCpm = (start, end, charsTyped) => {
   let time = end - start;
-  let charsTyped = words.length - 1;
-  for (let word of words) {
-    charsTyped += word.length;
-  }
-
   let cpm = charsTyped / (time / 60);
   let wpm = cpm / 5;
   console.log(cpm);

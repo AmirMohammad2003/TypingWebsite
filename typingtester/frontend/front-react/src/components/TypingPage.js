@@ -4,7 +4,6 @@ import getQuote from "../lookups/lookups";
 import { calculateWpmCpm, calculateAccuracy } from "../util";
 
 const Word = ({ word, wordState, cursor }) => {
-  console.log(wordState);
   let cursor_index = -2;
   if (cursor === true) {
     cursor_index = word.length === wordState.length ? -1 : wordState.length;
@@ -55,7 +54,7 @@ export default () => {
   const start_time = useRef(0);
   const end_time = useRef(0);
   const status = useRef(0); // 0 --> not started, 1 --> has started, 2 --> ended
-  const letters_typed = useRef(0); // including bad ones O_o
+  const letters_typed = useRef(0); // including bad ones O_o, excluding spaces
   const mainInput = useRef(null);
   const errors = useRef(0);
 
@@ -63,11 +62,11 @@ export default () => {
     let quote = await getQuote().then((_res) => JSON.parse(_res));
     setTimeout(() => {
       let ts = [];
-      console.log(quote);
+      // console.log(quote);
       for (let i = 0; i < quote["words"].length; i++) {
         ts.push("");
       }
-      console.log(ts);
+      // console.log(ts);
       setTypingState([ts, quote]);
     }, 1000);
   }, []);
@@ -89,7 +88,7 @@ export default () => {
         e.target.value = "";
       } else {
         words_typed.current += 1;
-        letters_typed.current += 1;
+
         e.target.value = "";
         if (words_typed.current === typingState[1]["words"].length) {
           end = 1;
@@ -102,7 +101,8 @@ export default () => {
         value === typingState[1]["words"][words_typed.current]
       ) {
         newState[0][words_typed.current] = value;
-        words_typed.current = words_typed.current + 1;
+        letters_typed.current += 1;
+        words_typed.current += 1;
         e.target.value = "";
         end = 1;
       } else {
@@ -118,6 +118,7 @@ export default () => {
           }
         }
         newState[0][words_typed.current] = value;
+        console.log(letters_typed.current);
       }
       // letters_typed.current = value.length;
       setTypingState(newState);
@@ -131,20 +132,22 @@ export default () => {
       setDontfocus(true);
       end_time.current = new Date().getTime() / 1000;
     }
-    console.log(words_typed.current);
+    // console.log(words_typed.current);
     forceUpdate();
   };
 
-  const renderResults = (words) => {
+  const renderResults = () => {
     let [cpm, wpm] = calculateWpmCpm(
       start_time.current,
       end_time.current,
-      words
+      letters_typed.current - errors.current
     );
     let acc = calculateAccuracy(letters_typed.current, errors.current);
-    console.log(cpm);
-    console.log(wpm);
-    console.log(acc);
+    // console.log(cpm);
+    // console.log(wpm);
+    // console.log(acc);
+    console.log("LettersTyped: " + letters_typed.current);
+    console.log("Errors: " + errors.current);
     return (
       <div id="detail-board" className="popup-animation">
         <div className="detail">WPM: {wpm}</div>
@@ -192,7 +195,6 @@ export default () => {
   };
 
   const renderTestingArea = (words) => {
-    console.log(status.current);
     if (words !== undefined) {
       return (
         <>

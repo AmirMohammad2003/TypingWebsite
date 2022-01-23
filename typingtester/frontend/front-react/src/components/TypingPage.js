@@ -3,47 +3,9 @@ import { CircularProgress } from "@mui/material";
 import getQuote from "../lookups/lookups";
 import { calculateWpmCpm, calculateAccuracy } from "../util";
 
-const Word = ({ word, wordState, cursor }) => {
-  let cursor_index = -2;
-  if (cursor === true) {
-    cursor_index = word.length === wordState.length ? -1 : wordState.length;
-  }
-  return (
-    <div className="word">
-      {[...word].map((letter, index) => {
-        let color = "";
-        if (index < wordState.length) {
-          color =
-            word.charAt(index) === wordState.charAt(index)
-              ? "correctChar"
-              : "wrongChar";
-        }
-        return (
-          <span
-            key={index}
-            className={color + (index === cursor_index ? " cursor" : "")}
-          >
-            {letter}
-          </span>
-        );
-      })}
-      {(wordState.length > word.length && (
-        <>
-          {[...wordState].map((letter, index) => {
-            if (index >= word.length) {
-              return (
-                <span key={index} className="extra">
-                  {letter}
-                </span>
-              );
-            }
-          })}
-          <span className={cursor ? "cursor" : ""}>&nbsp;</span>
-        </>
-      )) || <span className={cursor_index === -1 ? "cursor" : ""}>&nbsp;</span>}
-    </div>
-  );
-};
+import Word from "./Word";
+
+import { IconButtonWithPopup } from "./smallComponents";
 
 export default () => {
   const [typingState, setTypingState] = useState([[], {}]);
@@ -149,17 +111,23 @@ export default () => {
     console.log("LettersTyped: " + letters_typed.current);
     console.log("Errors: " + errors.current);
     return (
-      <div id="detail-board" className="popup-animation">
-        <div className="detail">WPM: {wpm}</div>
-        <br />
-        <div className="detail">CPM: {cpm}</div>
-        <br />
-        <div className="detail">ACC: {acc}%</div>
-        <br />
-        <div className="detail">
-          Time: {(end_time.current - start_time.current).toFixed(2).toString()}s
+      <>
+        <div id="detail-board" className="popup-animation">
+          <div className="detail">WPM: {wpm}</div>&nbsp;&nbsp;
+          <div className="detail">CPM: {cpm}</div>&nbsp;&nbsp;
+          <div className="detail">ACC: {acc}%</div>&nbsp;&nbsp;
+          <div className="detail">
+            Time:{" "}
+            {(end_time.current - start_time.current).toFixed(2).toString()}s
+          </div>
         </div>
-      </div>
+        <div className="center-flex">
+          <IconButtonWithPopup
+            iconClass="fa-rotate-right"
+            popupText="Refresh Test"
+          />
+        </div>
+      </>
     );
   };
 
@@ -180,7 +148,11 @@ export default () => {
   const renderWords = (words) => {
     return (
       <>
-        <div id="word-wrapper" style={{ color: "#616161" }}>
+        <div
+          id="word-wrapper"
+          className="popup-animation"
+          style={{ color: "#616161" }}
+        >
           {words.map((word, index) => (
             <Word
               key={index}
@@ -200,6 +172,19 @@ export default () => {
         <>
           {renderDetails()}
           {renderWords(words)}
+          <br />
+          <div className="center-flex" style={{ height: "16px" }}>
+            {/* <a href="/" className="popup">
+              <i className="fas fa-rotate-right btn-generic"></i>
+              <span className="popuptext" id="myPopup">
+                Refresh Test
+              </span>
+            </a> */}
+            <IconButtonWithPopup
+              iconClass="fa-rotate-right"
+              popupText="Refresh Test"
+            />
+          </div>
         </>
       );
     }

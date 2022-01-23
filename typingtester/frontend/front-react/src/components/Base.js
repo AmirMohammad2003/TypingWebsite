@@ -2,14 +2,6 @@ import React from "react";
 import { Container } from "@mui/material";
 import { Outlet } from "react-router-dom";
 
-const IconButtonLink = ({ to, iconClass }) => {
-  return (
-    <a href={to} className="button-link">
-      <i className={`fas fa-${iconClass}`}></i>
-    </a>
-  );
-};
-
 export default () => {
   return (
     <>

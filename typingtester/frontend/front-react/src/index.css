@@ -145,10 +145,102 @@ body {
 } */
 
 .popup-animation {
-  animation: popup 2s 0s 1;
+  animation: fadeIn 2s 0s 1;
+  -webkit-animation: fadeIn 2s 0s 1;
 }
 
-@keyframes popup {
+.btn-generic {
+  cursor: pointer;
+  color: #616161;
+  transition: color 0.2s;
+  padding: 1rem 2rem;
+}
+
+.btn-generic:hover {
+  color: #f66e0d;
+}
+
+/* Popup container */
+.popup {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* The actual popup (appears on top) */
+.popup .popuptext {
+  visibility: hidden;
+  width: 160px;
+  background-color: rgba(17, 17, 17, 0.932);
+  color: #fff;
+  text-align: center;
+  /* border-radius: 6px; */
+  padding: 8px 0;
+  position: absolute;
+  z-index: 1;
+  top: 150%;
+  left: 50%;
+  margin-left: -80px;
+}
+
+/* Popup arrow */
+.popup .popuptext::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -7px;
+  border-width: 7px;
+  border-style: solid;
+  border-color: transparent transparent rgba(17, 17, 17, 0.932) transparent;
+}
+
+/* Toggle this class when clicking on the popup container (hide and show the popup) */
+/* .popup .show {
+  visibility: visible;
+  -webkit-animation: commingDown 0.3s;
+  animation: commingDown 0.3s;
+} */
+
+.popup:hover .popuptext {
+  visibility: visible;
+  -webkit-animation: commingDown 0.3s;
+  animation: commingDown 0.3s;
+}
+
+@-webkit-keyframes commingDown {
+  from {
+    top: 50%;
+    opacity: 0;
+  }
+  to {
+    top: 150%;
+    opacity: 1;
+  }
+}
+
+@keyframes commingDown {
+  from {
+    top: 50%;
+    opacity: 0;
+  }
+  to {
+    top: 150%;
+    opacity: 1;
+  }
+}
+
+/* Add animation (fade in the popup) */
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
   from {
     opacity: 0;
   }

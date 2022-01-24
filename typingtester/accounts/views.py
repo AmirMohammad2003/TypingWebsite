@@ -18,8 +18,13 @@ class LoginView(View):
         username = request.POST.get('username')
         password = request.POST.get('password')
 
+        remember_me = request.POST.get('remember_me', None)
+
         user = authenticate(username=username, password=password)
         if user is not None:
+            if remember_me is None:
+                request.session.set_expiry(0)
+
             login(request, user)
             return JsonResponse({'success': 'true', 'username': username})
 

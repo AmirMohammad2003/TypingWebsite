@@ -106,6 +106,17 @@ const LoginPage = () => {
               name="password"
             />
             <br />
+            <label style={{ color: "#6f6c6c" }}>
+              <input
+                className="margin-top-26"
+                type="checkbox"
+                name="remember_me"
+                id="remember_me"
+              />
+              Remember me
+            </label>
+            {/* i may customize this field in future */}
+            <br />
             <input
               type="submit"
               value="Login"

@@ -6,13 +6,12 @@ import { isAuthenticated } from "../lookups/lookups";
 import { handleLogoutSubmission } from "../lookups/auth";
 
 export default () => {
-  const [authenticated, setAuthenticated] = useState([false, null]);
+  const [authenticated, setAuthenticated] = useState([false, null]); // authenticated[1] : username
   // const [any, forceUpdate] = useReducer((num) => num + 1, 0);
   useEffect(async () => {
     setAuthenticated(await isAuthenticated());
     // forceUpdate();
   }, []);
-  console.log(authenticated);
   return (
     <>
       <Container maxWidth="lg">
@@ -37,7 +36,6 @@ export default () => {
                       e.preventDefault();
                       handleLogoutSubmission();
                       setAuthenticated([false, null]);
-                      console.log("Sign out");
                     }}
                   />
                 )}

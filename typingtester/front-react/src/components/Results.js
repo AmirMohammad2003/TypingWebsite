@@ -13,7 +13,13 @@ const ResultBox = ({ _key, value }) => {
   );
 };
 
-const Results = ({ start_time, end_time, errors, letters_typed }) => {
+const Results = ({
+  start_time,
+  end_time,
+  errors,
+  letters_typed,
+  refreshCallback,
+}) => {
   let [cpm, wpm] = calculateWpmCpm(
     start_time,
     end_time,
@@ -45,8 +51,10 @@ const Results = ({ start_time, end_time, errors, letters_typed }) => {
       </div>
       <div className="center-flex" style={{ marginTop: "20px" }}>
         <IconButtonWithPopup
+          to="#"
           iconClass="fa-rotate-right"
           popupText="Refresh Test"
+          onClickCallback={refreshCallback}
         />
       </div>
     </>

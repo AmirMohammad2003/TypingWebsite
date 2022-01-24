@@ -13,7 +13,7 @@
 1. Registration and Login
 
 - [x] Login, registration, Logout
-- [ ] remember me in login page
+- [x] remember me in login page
 - [ ] password reset
 - [ ] password change
 

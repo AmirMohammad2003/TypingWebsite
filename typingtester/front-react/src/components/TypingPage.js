@@ -24,21 +24,39 @@ export default () => {
 
   const [any, forceUpdate] = useReducer((num) => num + 1, 0);
 
-  useEffect(async () => {
+  const init = async () => {
     let quote = await getQuote().then((_res) => JSON.parse(_res));
     let ts = [];
     for (let i = 0; i < quote["words"].length; i++) {
       ts.push("");
     }
     setTypingState([ts, quote]);
-  }, []);
+    if (mainInput !== null) {
+      mainInput.current.disabled = false;
+      mainInput.current.focus();
+      mainInput.current.value = "";
+      console.log("focused");
+    }
+  };
+
+  useEffect(init, []);
 
   useEffect(() => {
     mainInput.current.focus();
   }, [mainInput]);
 
+  const refreshCallback = () => {
+    status.current = 0;
+    mainInput.current.disabled = true;
+    words_typed.current = 0;
+    letters_typed.current = 0;
+    errors.current = 0;
+    setDontfocus(false);
+    init();
+  };
+
   const handleTyping = (e) => {
-    var end = 0;
+    let end = 0;
     if (status.current === 0) {
       status.current = 1;
       start_time.current = new Date().getTime() / 1000;
@@ -142,8 +160,10 @@ export default () => {
           <br />
           <div className="center-flex" style={{ height: "16px" }}>
             <IconButtonWithPopup
+              to="#"
               iconClass="fa-rotate-right"
               popupText="Refresh Test"
+              onClickCallback={refreshCallback}
             />
           </div>
         </>
@@ -175,6 +195,7 @@ export default () => {
           end_time={end_time.current}
           errors={errors.current}
           letters_typed={letters_typed.current}
+          refreshCallback={refreshCallback}
         />
       )) ||
         (typingState[1] && renderTestingArea(typingState[1]["words"])) || (

@@ -11,6 +11,11 @@
 ## Todo
 
 1. Registration and Login
+
+- [x] Login, registration, Logout
+- [ ] password reset
+- [ ] password change
+
 2. User Profile
 3. Live Wpm/Cpm/Acc
 4. Leader board

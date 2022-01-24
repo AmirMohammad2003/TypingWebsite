@@ -6,9 +6,8 @@ import {
   handleLoginSubmission,
 } from "../lookups/auth";
 
-const LoginPage = (props) => {
+const LoginPage = () => {
   // const navigate = useNavigate();
-
   const [errors, setErrors] = useState([]);
 
   return (

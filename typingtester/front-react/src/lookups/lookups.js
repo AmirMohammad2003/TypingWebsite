@@ -14,13 +14,21 @@ function getCookie(name) {
   return cookieValue;
 }
 
-const isAuthenticatedStrict = () => {
-  let username = fetch("/auth/check")
-    .then((_res) => _res.json())
+const isAuthenticatedStrict = async () => {
+  let [authenticated, username] = await fetch("/auth/check/", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "X-CSRFToken": await getCsrfToken(),
+    },
+  })
+    .then((_res) => {
+      return _res.json();
+    })
     .then((data) => {
-      if (data["success"] === "true") {
-        localStorage.setItem("username", username);
-        return [true, username];
+      if (data["Authenticated"] === "true") {
+        localStorage.setItem("username", data["username"]);
+        return [true, data["username"]];
       } else {
         return [false, null];
       }
@@ -28,12 +36,17 @@ const isAuthenticatedStrict = () => {
     .catch((err) => {
       alert(err);
     });
+
+  if (authenticated) return [authenticated, username];
+
+  return [false, null];
 };
 
-const isAuthenticated = () => {
+const isAuthenticated = async () => {
   let username = localStorage.getItem("username");
   if (!username) {
-    let [authenticated, username] = isAuthenticatedStrict();
+    let [authenticated, username] = await isAuthenticatedStrict();
+    console.log(authenticated, username);
     if (authenticated === true) {
       return [true, username];
     } else {

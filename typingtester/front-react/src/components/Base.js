@@ -1,9 +1,17 @@
-import React from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import { Container } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import { IconButtonLink } from "./smallComponents";
+import { isAuthenticated } from "../lookups/lookups";
 
 export default () => {
+  const [authenticated, setAuthenticated] = useState([false, null]);
+  const [any, forceUpdate] = useReducer((num) => num + 1, 0);
+  useEffect(async () => {
+    setAuthenticated(await isAuthenticated());
+    forceUpdate();
+  }, []);
+  // console.log(authenticated);
   return (
     <>
       <Container maxWidth="lg">
@@ -15,7 +23,11 @@ export default () => {
                 <IconButtonLink to="/" iconClass="keyboard" />
                 <IconButtonLink to="#" iconClass="crown" />
                 <IconButtonLink to="#" iconClass="info" />
-                <IconButtonLink to="/account" iconClass="user" />
+                <IconButtonLink
+                  to="/account"
+                  iconClass="user"
+                  optionalText={authenticated[0] ? authenticated[1] : ""}
+                />
               </div>
             </div>
             <div id="middleSide">

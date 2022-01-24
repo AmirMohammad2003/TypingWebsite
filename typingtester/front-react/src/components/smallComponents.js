@@ -9,10 +9,12 @@ const IconButtonWithPopup = ({ iconClass, popupText }) => {
   );
 };
 
-const IconButtonLink = ({ to, iconClass }) => {
+const IconButtonLink = ({ to, iconClass, optionalText = "" }) => {
   return (
     <a href={to} className="button-link">
       <i className={`fa-solid fa-${iconClass}`}></i>
+      &nbsp;
+      {optionalText}
     </a>
   );
 };

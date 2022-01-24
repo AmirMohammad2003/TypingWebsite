@@ -10,6 +10,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: #313131;
 }
+
+.margin-top-26 {
+  margin-top: 26px;
+}
+
 .wrapper-flex {
   display: flex;
   justify-content: space-around;
@@ -153,6 +158,17 @@ body {
   font-size: 60pt;
   font-weight: 100;
   letter-spacing: -6px;
+}
+
+.input-generic {
+  border: none;
+  outline: none;
+  padding: 1em;
+  border-radius: 10px;
+  background-color: #3d3d3d;
+  width: 20em;
+  font-size: 12pt;
+  color: #f5e6c8;
 }
 
 /* #bottomSide {

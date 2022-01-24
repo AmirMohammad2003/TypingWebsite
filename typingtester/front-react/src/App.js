@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import Base from "./components/Base";
 import TypingPage from "./components/TypingPage";
+import LoginPage from "./components/LoginPage";
 
 // testContext = createContext()
 
@@ -17,7 +18,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Base />}>
             <Route path="" element={<TypingPage />} />
-            {/* <Route path="account" /> */}
+            <Route path="account" element={<LoginPage />} />
             <Route path="*" element={<Navigate to="/" replace="true" />} />
           </Route>
         </Routes>

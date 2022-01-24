@@ -1,106 +1,21 @@
 import React, { useState } from "react";
 import { Grid, Alert, Container } from "@mui/material";
-import { getCsrfToken } from "../lookups/lookups";
-import { useNavigate } from "react-router-dom";
-
-const handleLoginSubmission = async (
-  e,
-  updateErrorsCallback,
-  successCallback
-) => {
-  updateErrorsCallback([]);
-  e.preventDefault();
-  if (e.target[0].value.trim() === "" || e.target[1].value.trim() === "") {
-    return;
-  }
-  let data = new FormData(e.target);
-
-  const requestOptions = {
-    method: "POST",
-    headers: {
-      "X-CSRFToken": await getCsrfToken(),
-      Accept: "application/json",
-      HTTP_X_REQUESTED_WITH: "XMLHttpRequest",
-      "X-Requested-With": "XMLHttpRequest",
-    },
-    credentials: "include",
-    body: data,
-  };
-  fetch("/auth/login/", requestOptions)
-    .then((response) => response.json())
-    .then((data) => {
-      if (data["success"] === "true") {
-        console.log(data["username"]);
-        localStorage.setItem("username", data["username"]);
-        successCallback();
-      } else if (data["success"] === "false") {
-        updateErrorsCallback([data["message"]]);
-      }
-    })
-    .catch((error) => console.error(error));
-};
-
-const handleRegistrationSubmission = async (
-  e,
-  updateErrorsCallback,
-  successCallback
-) => {
-  updateErrorsCallback([]);
-  e.preventDefault();
-  if (
-    e.target[0].value.trim() === "" ||
-    e.target[1].value.trim() === "" ||
-    e.target[2].value.trim() === "" ||
-    e.target[3].value.trim() === ""
-  ) {
-    return;
-  }
-
-  let data = new FormData(e.target);
-
-  const requestOptions = {
-    method: "POST",
-    headers: {
-      "X-CSRFToken": await getCsrfToken(),
-      Accept: "application/json",
-      HTTP_X_REQUESTED_WITH: "XMLHttpRequest",
-      "X-Requested-With": "XMLHttpRequest",
-    },
-    credentials: "include",
-    body: data,
-  };
-  fetch("/auth/register/", requestOptions)
-    .then((response) => response.json())
-    .then((data) => {
-      if (data["success"] === "true") {
-        console.log(data["username"]);
-        localStorage.setItem("username", data["username"]);
-        successCallback();
-      } else if (data["success"] === "false") {
-        updateErrorsCallback([data["errors"]]);
-      }
-    })
-    .catch((error) => console.log(error));
-};
+// import { useNavigate } from "react-router-dom";
+import {
+  handleRegistrationSubmission,
+  handleLoginSubmission,
+} from "../lookups/auth";
 
 const LoginPage = (props) => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const [errors, setErrors] = useState([]);
-  console.log(errors);
+
   return (
     <>
       <Container maxWidth="sm">
         {errors.map((errorMessage, index) => (
-          <Alert
-            severity="error"
-            key={index}
-            variant="filled"
-            onClose={(e) => {
-              e.target.parentNode.parentNode.parentNode.parentNode.style.display =
-                "none";
-            }}
-          >
+          <Alert severity="error" key={index} variant="filled">
             {errorMessage}
           </Alert>
         ))}
@@ -118,7 +33,8 @@ const LoginPage = (props) => {
                   setErrors(errors);
                 },
                 () => {
-                  navigate("/");
+                  // navigate("/");
+                  window.location.href = "/";
                 }
               );
             }}
@@ -171,7 +87,8 @@ const LoginPage = (props) => {
                   setErrors(errors);
                 },
                 () => {
-                  navigate("/");
+                  // navigate("/");
+                  window.location.href = "/";
                 }
               );
             }}

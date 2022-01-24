@@ -1,17 +1,18 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useState, useEffect /*, useReducer*/ } from "react";
 import { Container } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import { IconButtonLink } from "./smallComponents";
 import { isAuthenticated } from "../lookups/lookups";
+import { handleLogoutSubmission } from "../lookups/auth";
 
 export default () => {
   const [authenticated, setAuthenticated] = useState([false, null]);
-  const [any, forceUpdate] = useReducer((num) => num + 1, 0);
+  // const [any, forceUpdate] = useReducer((num) => num + 1, 0);
   useEffect(async () => {
     setAuthenticated(await isAuthenticated());
-    forceUpdate();
+    // forceUpdate();
   }, []);
-  // console.log(authenticated);
+  console.log(authenticated);
   return (
     <>
       <Container maxWidth="lg">
@@ -28,6 +29,18 @@ export default () => {
                   iconClass="user"
                   optionalText={authenticated[0] ? authenticated[1] : ""}
                 />
+                {authenticated[0] && (
+                  <IconButtonLink
+                    to="#"
+                    iconClass="sign-out-alt"
+                    onClickCallback={(e) => {
+                      e.preventDefault();
+                      handleLogoutSubmission();
+                      setAuthenticated([false, null]);
+                      console.log("Sign out");
+                    }}
+                  />
+                )}
               </div>
             </div>
             <div id="middleSide">

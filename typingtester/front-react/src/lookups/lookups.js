@@ -46,7 +46,6 @@ const isAuthenticated = async () => {
   let username = localStorage.getItem("username");
   if (!username) {
     let [authenticated, username] = await isAuthenticatedStrict();
-    console.log(authenticated, username);
     if (authenticated === true) {
       return [true, username];
     } else {

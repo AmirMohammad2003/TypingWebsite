@@ -68,11 +68,12 @@ const handleRegistrationSubmission = async (
   fetch("/auth/register/", requestOptions)
     .then((response) => response.json())
     .then((data) => {
-      if (data["success"] === "true") {
-        localStorage.setItem("username", data["username"]);
-        successCallback();
+      if (data["success"] === "unknown") {
+        // localStorage.setItem("username", data["username"]);
+        successCallback([data["message"]]);
       } else if (data["success"] === "false") {
-        updateErrorsCallback([data["errors"]]);
+        // console.log(data["errors"]);
+        updateErrorsCallback(data["errors"]);
       }
     })
     .catch((error) => console.log(error));

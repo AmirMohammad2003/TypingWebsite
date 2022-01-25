@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Grid, Alert, Container } from "@mui/material";
 // import { useNavigate } from "react-router-dom";
 import {
@@ -9,6 +9,14 @@ import {
 const LoginPage = () => {
   // const navigate = useNavigate();
   const [errors, setErrors] = useState([]);
+  const [info, setInfo] = useState([]);
+
+  useEffect(() => {
+    let message = sessionStorage.getItem("message");
+    if (message) {
+      setInfo([message]);
+    }
+  }, []);
 
   return (
     <>
@@ -16,6 +24,11 @@ const LoginPage = () => {
         {errors.map((errorMessage, index) => (
           <Alert severity="error" key={index} variant="filled">
             {errorMessage}
+          </Alert>
+        ))}
+        {info.map((infoMessage, index) => (
+          <Alert severity="info" key={index} variant="filled">
+            {infoMessage}
           </Alert>
         ))}
       </Container>
@@ -31,9 +44,10 @@ const LoginPage = () => {
                 (errors) => {
                   setErrors(errors);
                 },
-                () => {
+                (info) => {
                   // navigate("/");
-                  window.location.href = "/";
+                  // window.location.href = "/";
+                  setInfo(info);
                 }
               );
             }}

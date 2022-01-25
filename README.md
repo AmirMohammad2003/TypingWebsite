@@ -13,7 +13,9 @@
 1. Registration and Login
 
 - [x] Login, registration, Logout
-- [x] remember me in login page
+  - [x] remember me in login page
+  - [x] email verification
+    - [ ] email verification success page
 - [ ] password reset
 - [ ] password change
 

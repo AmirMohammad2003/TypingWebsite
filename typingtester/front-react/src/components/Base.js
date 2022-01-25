@@ -20,6 +20,7 @@ export default () => {
             <div id="topSide">
               <div id="logo">TypingTester</div>
               <div id="menu">
+                {/* TODO fix the navigation bug */}
                 <IconButtonLink to="/" iconClass="keyboard" />
                 <IconButtonLink to="#" iconClass="crown" />
                 <IconButtonLink to="#" iconClass="info" />

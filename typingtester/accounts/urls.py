@@ -1,6 +1,7 @@
 from django.urls import path  # , include
 
-from .views import LoginView, RegistrationView, LogoutView, CheckIfAuthenticated
+from .views import (CheckIfAuthenticated, LoginView, LogoutView,
+                    PasswordVerificationView, RegistrationView)
 
 app_name = 'accounts'
 
@@ -16,7 +17,7 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('register/', RegistrationView.as_view(), name='register'),
     path('check/', CheckIfAuthenticated.as_view(), name='check'),
+    path('verify/<uidb64>/<token>/', PasswordVerificationView.as_view(),
+         name='password_verification')
+    # path('reset/', ResetAuthenticated.as_view(), name='reset')
 ]
-
-
-# path('', include('django.contrib.auth.urls'))

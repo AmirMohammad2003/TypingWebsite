@@ -17,6 +17,7 @@ class Quote(models.Model):
     # TODO: source
     # TODO: the user who submitted the quote
 
+    objects = models.Manager()
     randoms = QuoteManager()
 
     def __str__(self):

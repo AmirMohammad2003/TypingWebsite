@@ -29,6 +29,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'localhost:3000']
 
+if DEBUG:
+    FRONTEND = "http://localhost:3000"
+
+else:
+    FRONTEND = "http://localhost:8000/frontend"  # probably wrong
 
 # Application definition
 
@@ -41,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Third party apps
     'rest_framework',
+    'mailer',
 
     # my apps
     'api.apps.ApiConfig',
@@ -121,6 +127,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'accounts.User'
+
+if DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+    EMAIL_FILE_PATH = str(BASE_DIR.joinpath('sent_emails'))
+
+    MAILER_EMAIL_MAX_BATCH = None  # integer or None
+    MAILER_EMAIL_MAX_DEFERRED = None  # integer or None
+    MAILER_EMAIL_THROTTLE = 0  # passed to time.sleep()
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
@@ -177,3 +193,7 @@ if DEBUG:
 CORS_URLS_REGEX = r"^/(api|auth)/.*$"
 
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 30  # One month
+
+if DEBUG:
+    # A dummy email address for testing purposes
+    EMAIL_HOST_USER = "example@localhost.com"

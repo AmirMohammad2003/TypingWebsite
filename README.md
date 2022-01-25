@@ -15,7 +15,7 @@
 - [x] Login, registration, Logout
   - [x] remember me in login page
   - [x] email verification
-    - [ ] email verification success page
+    - [x] email verification success page
 - [ ] password reset
 - [ ] password change
 

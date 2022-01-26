@@ -8,6 +8,7 @@ import {
 import Base from "./components/Base";
 import TypingPage from "./components/TypingPage";
 import LoginPage from "./components/LoginPage";
+import ResetPasswordPage from "./components/ResetPasswordPage";
 import SuccessPage from "./components/SuccessPage";
 
 // testContext = createContext()
@@ -20,7 +21,11 @@ const App = () => {
           <Route path="/" element={<Base />}>
             <Route path="" element={<TypingPage />} />
             <Route path="account" element={<LoginPage />} />
-            <Route path="/success/:type" element={<SuccessPage />} />
+            <Route
+              path="account/reset/:uidb64/:token"
+              element={<ResetPasswordPage />}
+            />
+            <Route path="success/:type" element={<SuccessPage />} />
             <Route path="*" element={<Navigate to="/" replace="true" />} />
           </Route>
         </Routes>

@@ -13,10 +13,16 @@
 1. Registration and Login
 
 - [x] Login, registration, Logout
+
   - [x] remember me in login page
   - [x] email verification
     - [x] email verification success page
-- [ ] password reset
+  - [ ] email verification resend
+
+- [x] password reset
+
+  - [ ] resend button
+
 - [ ] password change
 
 2. User Profile

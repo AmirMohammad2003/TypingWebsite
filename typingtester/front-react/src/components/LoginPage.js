@@ -1,26 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Alert, Container } from "@mui/material";
-// import { useNavigate } from "react-router-dom";
 import {
   handleRegistrationSubmission,
   handleLoginSubmission,
+  handleResetPassword,
 } from "../lookups/auth";
 
 const LoginPage = () => {
-  // const navigate = useNavigate();
   const [errors, setErrors] = useState([]);
   const [info, setInfo] = useState([]);
-
-  useEffect(() => {
-    let message = sessionStorage.getItem("message");
-    if (message) {
-      setInfo([message]);
-    }
-  }, []);
-
   return (
     <>
       <Container maxWidth="sm">
+        {/* TODO make this guy a component */}
         {errors.map((errorMessage, index) => (
           <Alert severity="error" key={index} variant="filled">
             {errorMessage}
@@ -45,8 +37,6 @@ const LoginPage = () => {
                   setErrors(errors);
                 },
                 (info) => {
-                  // navigate("/");
-                  // window.location.href = "/";
                   setInfo(info);
                 }
               );
@@ -100,7 +90,6 @@ const LoginPage = () => {
                   setErrors(errors);
                 },
                 () => {
-                  // navigate("/");
                   window.location.href = "/";
                 }
               );
@@ -120,17 +109,38 @@ const LoginPage = () => {
               name="password"
             />
             <br />
-            <label style={{ color: "#6f6c6c" }}>
-              <input
-                className="margin-top-26"
-                type="checkbox"
-                name="remember_me"
-                id="remember_me"
-              />
-              Remember me
-            </label>
-            {/* i may customize this field in future */}
             <br />
+            <div style={{ width: "20em" }} align="left">
+              <a
+                onClick={(e) => {
+                  e.preventDefault();
+                  const email = prompt("Enter your email address:");
+                  handleResetPassword(
+                    email,
+                    (errors) => {
+                      setErrors(errors);
+                    },
+                    (info) => {
+                      setInfo(info);
+                    }
+                  );
+                }}
+                style={{ cursor: "pointer" }}
+              >
+                forgot your password?
+              </a>
+              <br />
+              <label style={{ color: "#6f6c6c" }}>
+                {/* i may customize this field in future */}
+                <input
+                  className="margin-top-26"
+                  type="checkbox"
+                  name="remember_me"
+                  id="remember_me"
+                />
+                Remember me
+              </label>
+            </div>
             <input
               type="submit"
               value="Login"

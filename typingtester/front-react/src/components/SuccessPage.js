@@ -4,6 +4,8 @@ import { useParams, useNavigate } from "react-router-dom";
 export default () => {
   const params = useParams();
   const navigate = useNavigate();
+  // TODO going to change how this guy works i don't like to hard code anything in the frontend
+  //
   return (
     <>
       <div
@@ -20,11 +22,26 @@ export default () => {
                 e.preventDefault();
               }}
             >
-              Login
+              Login page
             </a>{" "}
-            page to login into your account.
+            to login into your account.
           </p>
         )) ||
+          (params.type === "passwordResetDone" && (
+            <p>
+              Your Password Reset Successfully please go back to{" "}
+              <a
+                href="#"
+                onClick={(e) => {
+                  navigate("/account");
+                  e.preventDefault();
+                }}
+              >
+                Login Page
+              </a>{" "}
+              and login to your account.
+            </p>
+          )) ||
           navigate("/")}
       </div>
     </>

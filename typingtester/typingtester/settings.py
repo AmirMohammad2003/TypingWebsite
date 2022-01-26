@@ -30,7 +30,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'localhost:3000']
 
 if DEBUG:
-    FRONTEND = "http://localhost:3000"
+    FRONTEND = "http://localhost:3000"  # I should get rid of this scheme
 
 else:
     FRONTEND = "http://localhost:8000/frontend"  # probably wrong
@@ -44,11 +44,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Third party apps
+    # Third-Party Apps
     'rest_framework',
     'mailer',
 
-    # my apps
+    # Project Apps
     'api.apps.ApiConfig',
     'frontend.apps.FrontendConfig',
     'accounts.apps.AccountsConfig',
@@ -189,11 +189,12 @@ if DEBUG:
         "http_x_requested_with",
     ]
 
-
-CORS_URLS_REGEX = r"^/(api|auth)/.*$"
+    CORS_URLS_REGEX = r"^/(api|auth)/.*$"
 
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 30  # One month
 
 if DEBUG:
     # A dummy email address for testing purposes
     EMAIL_HOST_USER = "example@localhost.com"
+
+PASSWORD_RESET_TIMEOUT = 86400  # 1 day

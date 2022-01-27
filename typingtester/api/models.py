@@ -1,7 +1,10 @@
 import random
 
-from django.db.models.aggregates import Count
+from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models.aggregates import Count
+
+UserModel = get_user_model()
 
 
 class QuoteManager(models.Manager):
@@ -26,3 +29,11 @@ class Quote(models.Model):
 
         else:
             return self.content[:56] + '...'
+
+
+class UserStatistics(models.Model):
+    tests_started = models.IntegerField(default=0)
+    tests_completed = models.IntegerField(default=0)
+    time_typing = models.IntegerField(default=0)
+    user = models.OneToOneField(
+        UserModel, on_delete=models.CASCADE, related_name="statistics")

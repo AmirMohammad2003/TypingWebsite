@@ -27,7 +27,7 @@ const isAuthenticatedStrict = async () => {
     })
     .then((data) => {
       if (data["Authenticated"] === "true") {
-        localStorage.setItem("username", data["username"]);
+        sessionStorage.setItem("username", data["username"]);
         return [true, data["username"]];
       } else {
         return [false, null];
@@ -43,7 +43,7 @@ const isAuthenticatedStrict = async () => {
 };
 
 const isAuthenticated = async () => {
-  let username = localStorage.getItem("username");
+  let username = sessionStorage.getItem("username");
   if (!username) {
     let [authenticated, username] = await isAuthenticatedStrict();
     if (authenticated === true) {
@@ -96,7 +96,6 @@ const getQuote = () => {
     xhr.open("GET", "/api/load");
     xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     xhr.setRequestHeader("HTTP_X_REQUESTED_WITH", "XMLHttpRequest");
-    // xhr.setRequestHeader("X-CSRFToken", csrftoken);
     xhr.send();
   });
 };

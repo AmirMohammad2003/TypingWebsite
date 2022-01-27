@@ -27,7 +27,7 @@ const handleLoginSubmission = async (
     .then((response) => response.json())
     .then((data) => {
       if (data["success"] === "true") {
-        localStorage.setItem("username", data["username"]);
+        sessionStorage.setItem("username", data["username"]);
         successCallback();
       } else if (data["success"] === "false") {
         updateErrorsCallback([data["message"]]);
@@ -90,7 +90,7 @@ const handleLogoutSubmission = async () => {
       },
     });
   }
-  localStorage.removeItem("username");
+  sessionStorage.removeItem("username");
   return true;
 };
 

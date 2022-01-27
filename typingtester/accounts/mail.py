@@ -39,7 +39,7 @@ def send_email_verification_mail(request, user):
         (
             "http",
             str(base),
-            "auth/verify/" + str(uid) + "/" + str(token),
+            "auth/verify/" + str(uid) + "/" + str(token) + "/",
             '',
             '',
             '',
@@ -61,7 +61,8 @@ def send_reset_password_mail(request, user, email):
     uid = urlsafe_base64_encode(str(user.id).encode())
     base = get_current_site(request)
 
-    url = settings.FRONTEND + "/account/reset/" + str(uid) + "/" + str(token)
+    url = settings.FRONTEND + "/account/reset/" + \
+        str(uid) + "/" + str(token) + "/"
 
     return send_simple_mail(
         "Reset Your Password",  # Subject

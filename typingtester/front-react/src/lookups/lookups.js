@@ -65,7 +65,7 @@ const getCsrfToken = async () => {
   } else {
     // if the frontend is living on a different server so it's not in the cookie
     // we need to retrieve the csrf token from the server
-    csrftoken = await fetch("/api/csrf", {
+    csrftoken = await fetch("/api/csrf/", {
       method: "GET",
     })
       .then((_res) => {
@@ -83,6 +83,7 @@ const getCsrfToken = async () => {
 
 const getQuote = () => {
   return new Promise((resolve) => {
+    console.log("i ran");
     const xhr = new XMLHttpRequest();
     xhr.responseType = "text";
     xhr.onload = () => {
@@ -93,12 +94,17 @@ const getQuote = () => {
     xhr.onerror = () => {
       alert("Error");
     };
-    xhr.open("GET", "/api/load");
+    xhr.open("GET", "/api/load/");
     xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     xhr.setRequestHeader("HTTP_X_REQUESTED_WITH", "XMLHttpRequest");
     xhr.send();
   });
 };
 
-export { getCookie, getCsrfToken, isAuthenticated, isAuthenticatedStrict };
-export default getQuote;
+export {
+  getCookie,
+  getCsrfToken,
+  isAuthenticated,
+  isAuthenticatedStrict,
+  getQuote,
+};

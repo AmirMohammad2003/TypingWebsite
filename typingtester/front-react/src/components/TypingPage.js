@@ -1,6 +1,11 @@
 import React, { useState, useRef, useEffect, useReducer } from "react";
 import { CircularProgress } from "@mui/material";
-import getQuote from "../lookups/lookups";
+import { getQuote } from "../lookups/lookups";
+import {
+  updateStartedTests,
+  updateCompletedTests,
+  updateTotalTestsTime,
+} from "../lookups/requests";
 
 import Word from "./Word";
 import Results from "./Results";
@@ -37,9 +42,12 @@ export default () => {
       mainInput.current.value = "";
       console.log("focused");
     }
+    updateStartedTests();
   };
 
-  useEffect(init, []);
+  useEffect(() => {
+    init();
+  }, []);
 
   useEffect(() => {
     mainInput.current.focus();
@@ -111,6 +119,8 @@ export default () => {
       status.current = 2;
       setDontfocus(true);
       end_time.current = new Date().getTime() / 1000;
+      updateCompletedTests();
+      updateTotalTestsTime(end_time.current - start_time.current);
     }
     // console.log(words_typed.current);
     forceUpdate();

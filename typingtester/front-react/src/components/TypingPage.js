@@ -201,6 +201,7 @@ export default () => {
       <br />
       {(status.current === 2 && (
         <Results
+          quote_id={typingState[1]["id"]}
           start_time={start_time.current}
           end_time={end_time.current}
           errors={errors.current}

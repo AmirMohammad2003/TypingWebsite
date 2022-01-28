@@ -101,10 +101,54 @@ const getQuote = () => {
   });
 };
 
+const loadStatistics = async () => {
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      "X-CSRFtoken": await getCsrfToken(),
+      Accept: "application/json",
+    },
+  };
+
+  return fetch("/api/load-statistics/", requestOptions)
+    .then((response) => {
+      if (response.status === 200) {
+        return response.json();
+      } else {
+        return null;
+      }
+    })
+    .then((data) => data)
+    .catch((error) => console.log(error));
+};
+
+const loadTestRecords = async () => {
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      "X-CSRFtoken": await getCsrfToken(),
+      Accept: "application/json",
+    },
+  };
+
+  return fetch("/api/load-test-records/", requestOptions)
+    .then((response) => {
+      if (response.status === 200) {
+        return response.json();
+      } else {
+        return null;
+      }
+    })
+    .then((data) => data)
+    .catch((error) => console.log(error));
+};
+
 export {
   getCookie,
   getCsrfToken,
   isAuthenticated,
   isAuthenticatedStrict,
   getQuote,
+  loadStatistics,
+  loadTestRecords,
 };

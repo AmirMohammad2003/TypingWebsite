@@ -59,4 +59,36 @@ const updateTotalTestsTime = async (time) => {
     .catch((error) => console.log(error));
 };
 
-export { updateStartedTests, updateCompletedTests, updateTotalTestsTime };
+const SendTestRecordData = async (quote_id, time, cpm, acc) => {
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFtoken": await getCsrfToken(),
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      time: time,
+      cpm: cpm,
+      acc: acc,
+      quote_id: quote_id,
+    }),
+  };
+
+  fetch("/api/insert-user-test/", requestOptions)
+    .then((response) => response.json())
+    .then((data) => {
+      if (data["success"] === "true") {
+        console.log("Successfully saved user test");
+      } else {
+        console.log("Failed to save user test", data);
+      }
+    });
+};
+
+export {
+  updateStartedTests,
+  updateCompletedTests,
+  updateTotalTestsTime,
+  SendTestRecordData,
+};

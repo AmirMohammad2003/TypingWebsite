@@ -82,10 +82,13 @@ class RegistrationView(View):
             return JsonResponse({'success': 'false', 'errors': errors})
 
 
-class LogoutView(View, LoginRequiredMixin):
+class LogoutView(View):
 
     @method_decorator(ensure_csrf_cookie)
     def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return JsonResponse({'success': 'false'})
+
         logout(request)
         return JsonResponse({'success': 'true'})
 

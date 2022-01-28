@@ -37,3 +37,19 @@ class UserStatistics(models.Model):
     time_typing = models.IntegerField(default=0)
     user = models.OneToOneField(
         UserModel, on_delete=models.CASCADE, related_name="statistics")
+
+    def __str__(self):
+        return f"{self.user.username}'s statistics"
+
+
+class UserTest(models.Model):
+    user = models.ForeignKey(
+        UserModel, on_delete=models.CASCADE, related_name="tests")
+    time = models.FloatField()
+    cpm = models.PositiveIntegerField()
+    accuracy = models.PositiveIntegerField()
+    quote = models.ForeignKey(
+        Quote, on_delete=models.SET_NULL, related_name="quote", null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.quote.content[:50]}..."

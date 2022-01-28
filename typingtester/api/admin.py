@@ -1,3 +1,10 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Quote
+
+
+class QuoteAdmin(admin.ModelAdmin):
+    list_display = ('content',)
+
+
+admin.site.register(Quote, QuoteAdmin)

@@ -34,7 +34,7 @@ class Quote(models.Model):
 class UserStatistics(models.Model):
     tests_started = models.IntegerField(default=0)
     tests_completed = models.IntegerField(default=0)
-    time_typing = models.IntegerField(default=0)
+    time_typing = models.FloatField(default=0)
     user = models.OneToOneField(
         UserModel, on_delete=models.CASCADE, related_name="statistics")
 

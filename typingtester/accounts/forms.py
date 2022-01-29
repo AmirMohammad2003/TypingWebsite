@@ -1,35 +1,47 @@
-from calendar import c
-from django.contrib.auth.forms import UserCreationForm
+"""accounts.forms
+Forms used for the accounts application
+like the registration form and the login form.
+"""
+
 from django import forms
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, password_validation
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.tokens import default_token_generator
 from django.core import validators
 from django.core.exceptions import ValidationError
-from django.contrib.auth import password_validation
 from django.utils.http import urlsafe_base64_decode
-from django.contrib.auth.tokens import default_token_generator
 
 
-def validate_equal_to(value1, value2):
-    if value1 != value2:
-        raise ValidationError()
-
-
-UserModel = get_user_model()
+user_model = get_user_model()
 
 
 class UserRegistrationForm(UserCreationForm):
+    """
+    Form for registering a new user.
+    inherits from UserCreationForm
+    and adds the email field to the form.
+    """
     email = forms.EmailField(validators=[validators.EmailValidator])
 
-    class Meta:
-        model = UserModel
+    class Meta:  # pylint: disable=too-few-public-methods
+        """Meta class for UserRegistrationForm"""
+        model = user_model
         fields = ('email', 'username', 'password1', 'password2')
 
 
 class PasswordResetEmailSubmissionForm(forms.Form):
+    """Password reset email submission form
+    used for getting password reset emails.
+    """
     email = forms.EmailField(validators=[validators.EmailValidator])
 
 
 class PasswordResetConfirmForm(forms.Form):
+    """Password reset confirmation form
+    used for confirming the password reset.
+    and setting the new password.
+    """
+
     error_messages = {
         'password_mismatch': 'The two password fields didn\'t match.',
         'invalid_token': 'The token is either invalid or Corrupted',
@@ -40,6 +52,11 @@ class PasswordResetConfirmForm(forms.Form):
     password2 = forms.CharField(strip=False, required=True)
 
     def clean_password2(self):
+        """
+        checks if the two passwords match.
+        and raises an error if they don't.
+        and if the passwords are not blank strings.
+        """
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")
         if password1 and password2 and password1 != password2:
@@ -51,43 +68,57 @@ class PasswordResetConfirmForm(forms.Form):
         return password2
 
     def clean_uidb64(self):
+        """
+        decodes uidb64 to the user id.
+        checks if the id is valid.
+        and returns the user id.
+        """
         try:
-            pk = urlsafe_base64_decode(self.cleaned_data.get('uidb64'))
+            primary_key = urlsafe_base64_decode(
+                self.cleaned_data.get('uidb64')
+            )
 
-        except:
+        except Exception as error:
+            raise ValidationError(
+                self.error_messages['invalid_token'],
+                code='invalid_token'
+            ) from error
+
+        if not primary_key.isdigit():
             raise ValidationError(
                 self.error_messages['invalid_token'],
                 code='invalid_token'
             )
 
-        if not pk.isdigit():
-            raise ValidationError(
-                self.error_messages['invalid_token'],
-                code='invalid_token'
-            )
-
-        return pk
+        return primary_key
 
     def clean_token(self):
-        pk = self.cleaned_data.get('uidb64')
-        user_result = UserModel.objects.filter(pk=pk)
+        """
+        checks if the token is valid.
+        and returns the user if it is valid.
+        """
+        primary_key = self.cleaned_data.get('uidb64')
+        user_result = user_model.objects.filter(pk=primary_key)
         if not user_result.exists():
             raise ValidationError(
-                'user doesn\'t exist {}'.format(pk),
+                f'user doesn\'t exist {primary_key}',
                 code='invalid_token'
             )
 
         user = user_result[0]
-        if (default_token_generator.check_token(user, self.cleaned_data.get('token'))):
+        if default_token_generator.check_token(user, self.cleaned_data.get('token')):
             return user
 
-        else:
-            raise ValidationError(
-                self.error_messages['invalid_token'],
-                code='invalid_token'
-            )
+        raise ValidationError(
+            self.error_messages['invalid_token'],
+            code='invalid_token'
+        )
 
     def save(self, commit=True):
+        """
+        saves the new password in the user object.
+        and in the database if commit is True.
+        """
         user = self.cleaned_data.get('token')  # it actually returns the user
         password = self.cleaned_data.get('password2')
 

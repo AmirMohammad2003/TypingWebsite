@@ -214,7 +214,7 @@ class ResetPasswordView(View):
                 user = user_result[0]
                 if user.is_active:
                     if user.is_email_verified:
-                        send_reset_password_mail(request, user, email)
+                        send_reset_password_mail(user, email)
                         user.set_unusable_password()
                         return JsonResponse({
                             'success': 'true', "message": "An email was sent to your inbox."

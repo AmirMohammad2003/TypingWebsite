@@ -1,6 +1,7 @@
 import json
 
-from django.test import TestCase, client
+from django.core import mail
+from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 
 
@@ -8,7 +9,7 @@ class LoginAndLogoutTestCases(TestCase):
 
     def setUp(self):
         self.UserModel = get_user_model()
-        self.client = client.Client()
+        self.client = Client()
         self.user = self.UserModel.objects.create_user(
             username='test', password='test', email='test@test.com')
 
@@ -56,3 +57,121 @@ class LoginAndLogoutTestCases(TestCase):
         self.assertEqual(response.status_code, 200)
         _res = json.loads(response.content)
         self.assertEqual(_res['success'], 'false')
+
+
+class CheckIfAuthenticatedTestCases(TestCase):
+
+    def setUp(self):
+        self.UserModel = get_user_model()
+        self.client = Client()
+        self.user = self.UserModel.objects.create_user(
+            username='test', password='test', email='test@test.com')
+        self.user.is_active = True
+        self.user.is_email_verified = True
+        self.user.save()
+
+    def test_check_if_authenticated_true(self):
+        self.client.login(username='test', password='test')
+        response = self.client.post('/auth/check/')
+        self.assertEqual(response.status_code, 200)
+        _res = json.loads(response.content)
+        self.assertEqual(_res['Authenticated'], 'true')
+
+    def test_check_if_authenticated_false(self):
+        response = self.client.post('/auth/check/')
+        self.assertEqual(response.status_code, 200)
+        _res = json.loads(response.content)
+        self.assertEqual(_res['Authenticated'], 'false')
+
+
+class RegisterTestCases(TestCase):
+
+    def setUp(self):
+        self.UserModel = get_user_model()
+        self.client = Client()
+
+    def test_register_success(self):
+        response = self.client.post(
+            '/auth/register/',
+            {
+                'username': 'test', 'password1': 'testtesttest',
+                'password2': 'testtesttest', 'email': 'test@test.com'
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+        _res = json.loads(response.content)
+        self.assertEqual(_res['success'], 'unknown')
+        self.assertEqual(len(mail.outbox), 1)
+        url = mail.outbox[0].message().as_string().split('\n')[-1]
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.client.post(
+            '/auth/login/', {'username': 'test', 'password': 'testtesttest'}
+        )
+        response = self.client.post('/auth/check/')
+        self.assertEqual(response.status_code, 200)
+        _res = json.loads(response.content)
+        self.assertEqual(_res['Authenticated'], 'true')
+
+    def test_register_username_exists(self):
+        self.UserModel.objects.create_user(
+            username='test4', password='test', email='test4@test.com'
+        )
+        response = self.client.post(
+            '/auth/register/',
+            {
+                'username': 'test4', 'password1': 'test',
+                'password2': 'test', 'email': 'test4@test.com'
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+        _res = json.loads(response.content)
+        self.assertEqual(_res['success'], 'false')
+
+    def test_register_email_exists(self):
+        self.UserModel.objects.create_user(
+            username='test', password='test', email='test@test.com'
+        )
+        response = self.client.post(
+            '/auth/register/',
+            {
+                'username': 'test3', 'password1': 'test',
+                'password2': 'test', 'email': 'test3@test.com'
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+        _res = json.loads(response.content)
+        self.assertEqual(_res['success'], 'false')
+
+    def test_register_invalid_password(self):
+        response = self.client.post(
+            '/auth/register/',
+            {
+                'username': 'test5', 'password1': 'test',
+                'password2': 'test', 'email': 'test5@test.com'
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+        _res = json.loads(response.content)
+        self.assertEqual(_res['success'], 'false')
+
+    def test_register_unverified_email_login(self):
+        response = self.client.post(
+            '/auth/register/',
+            {
+                'username': 'test2', 'password1': '0s5I6vjDCKeo',
+                'password2': '0s5I6vjDCKeo', 'email': 'test2@test.com'
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+        _res = json.loads(response.content)
+        # print(_res['errors'])
+        self.assertEqual(_res['success'], 'unknown')
+        self.assertEqual(len(mail.outbox), 1)
+        self.client.post(
+            '/auth/login/', {'username': 'test2', 'password': '0s5I6vjDCKeo'}
+        )
+        response = self.client.post('/auth/check/')
+        self.assertEqual(response.status_code, 200)
+        _res = json.loads(response.content)
+        self.assertEqual(_res['Authenticated'], 'false')

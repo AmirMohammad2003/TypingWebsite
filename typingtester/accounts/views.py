@@ -109,6 +109,9 @@ class EmailVerificationView(View):
     def get(self, request, uidb64, token, *args, **kwargs):
         pk = urlsafe_base64_decode(uidb64)
         User = get_user_model()
+        if not pk.isdigit():
+            return JsonResponse({'success': 'false', 'message': "Access Denied"})
+
         user = User.objects.filter(pk=pk)
         if user.exists():
             user = user[0]
@@ -169,9 +172,7 @@ class PasswordResetConfirmView(View):
 
     @method_decorator(ensure_csrf_cookie)
     def post(self, request, *args, **kwargs):
-        print(request.POST)
         form = PasswordResetConfirmForm(request.POST)
-
         if form.is_valid():
             form.save()
             return JsonResponse({

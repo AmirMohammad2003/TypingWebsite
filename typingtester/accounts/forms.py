@@ -60,6 +60,12 @@ class PasswordResetConfirmForm(forms.Form):
                 code='invalid_token'
             )
 
+        if not pk.isdigit():
+            raise ValidationError(
+                self.error_messages['invalid_token'],
+                code='invalid_token'
+            )
+
         return pk
 
     def clean_token(self):

@@ -1,10 +1,14 @@
+"""api.urls
+url routings for the api application.
+"""
+
 from django.urls import path
 
 from .views import (CompletedTest, CsrfRequest, InsertUserTest, LoadQuote,
                     LoadStatistics, LoadTestRecords, StartedTest,
                     UpdateTotalTestsTime)
 
-app_name = 'api'
+app_name = 'api'  # pylint: disable=invalid-name
 urlpatterns = [
     path('load/', LoadQuote.as_view(), name='load'),
     path('csrf/', CsrfRequest.as_view(), name='csrf'),

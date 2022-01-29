@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import dotenv_values
 
 from corsheaders.defaults import default_headers
 
@@ -22,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-^5xm12k7qm&(a&86ac6#idq05m79!uy_8+^fr14ljal&f354w@'
+SECRET_KEY = dotenv_values(".env")["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -47,26 +48,17 @@ INSTALLED_APPS = [
     # Third-Party Apps
     'rest_framework',
     'mailer',
-
+    'corsheaders',
     # Project Apps
     'api.apps.ApiConfig',
     'frontend.apps.FrontendConfig',
     'accounts.apps.AccountsConfig',
 ]
-if DEBUG:
-    INSTALLED_APPS += [
-        'corsheaders',
-    ]
 
+MIDDLEWARE = [
+    # Third party cors middleware
+    'corsheaders.middleware.CorsMiddleware',
 
-MIDDLEWARE = []
-if DEBUG:
-    MIDDLEWARE += [
-        # Third party cors middleware
-        'corsheaders.middleware.CorsMiddleware',
-    ]
-
-MIDDLEWARE += [
     # Builtin middlewares
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

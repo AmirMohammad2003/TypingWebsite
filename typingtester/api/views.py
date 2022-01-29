@@ -148,12 +148,22 @@ class InsertUserTest(APIView):
         :param request:
         receives the time, cpm, acc and quote_id from the request.
         """
+        time = float(request.data['time'])
+        cpm = float(request.data['cpm'])
+        acc = float(request.data['acc'])
+        quote_id = int(request.data['quote_id'])
+        if time < 0 or cpm < 0 or acc < 0 or quote_id < 0:
+            return Response(
+                {'success': 'false', 'error': 'invalid input'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         user = request.user
         user.tests.create(
-            time=float(request.data['time']),
-            cpm=int(request.data['cpm']),
-            accuracy=int(request.data['acc']),
-            quote_id=int(request.data['quote_id'])
+            time=time,
+            cpm=cpm,
+            accuracy=acc,
+            quote_id=quote_id
         )
 
         return Response({'success': 'true'}, status=status.HTTP_201_CREATED)

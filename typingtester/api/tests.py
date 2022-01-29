@@ -196,13 +196,33 @@ class TestInsertUserTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['success'], 'true')
         updated_user = self.user_model.objects.get(username='test')
+        self.assertEqual(updated_user.tests.count(), 1)
         test = updated_user.tests.all()[0]
         self.assertEqual(test.time, 10)
         self.assertEqual(test.cpm, 10)
         self.assertEqual(test.accuracy, 10)
         self.assertEqual(test.user_id, self.user.id)
 
-    # TODO: test with invalid data (quote_id, time, cpm, acc) # pylint: disable=fixme
+    def test_insert_user_test_with_invalid_data(self):
+        """
+        Tests that the insert user test view requires the user to be logged in,
+        and the user is logged in.
+        and the data is invalid.
+        """
+        self.client.login(username='test', password='test')
+        response = self.client.post(
+            '/api/insert-user-test/',
+            {
+                'quote_id': -1,
+                'time': -10,
+                'cpm': -10,
+                'acc': -10
+            }
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['success'], 'false')
+        updated_user = self.user_model.objects.get(username='test')
+        self.assertEqual(updated_user.tests.count(), 0)
 
 
 class TestLoadStatistics(TestCase):

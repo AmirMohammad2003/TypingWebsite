@@ -60,10 +60,9 @@ class LoginView(View):
             login(request, user)
             return JsonResponse({'success': 'true', 'username': username})
 
-        else:
-            return JsonResponse(
-                {'success': 'false', 'message': 'Invalid username or password'}
-            )
+        return JsonResponse(
+            {'success': 'false', 'message': 'Invalid username or password'}
+        )
 
 
 class RegistrationView(View):
@@ -97,17 +96,15 @@ class RegistrationView(View):
                     'message': "Please check your inbox to verify your email address"
                 })
 
-            else:
-                return JsonResponse({
-                    'success': 'unknown',
-                    'message': "Internal Server Error"
-                })
+            return JsonResponse({
+                'success': 'unknown',
+                'message': "Internal Server Error"
+            })
 
-        else:
-            errors = []
-            for key, value in form.errors.items():
-                errors += key + ": " + value
-            return JsonResponse({'success': 'false', 'errors': errors})
+        errors = []
+        for key, value in form.errors.items():
+            errors += key + ": " + value
+        return JsonResponse({'success': 'false', 'errors': errors})
 
 
 class LogoutView(View):
@@ -129,8 +126,7 @@ class LogoutView(View):
             logout(request)
             return JsonResponse({'success': 'true'})
 
-        else:
-            return JsonResponse({'success': 'false'})
+        return JsonResponse({'success': 'false'})
 
 
 class CheckIfAuthenticated(View):
@@ -151,8 +147,7 @@ class CheckIfAuthenticated(View):
         if request.user.is_authenticated:
             return JsonResponse({'Authenticated': 'true', 'username': request.user.username})
 
-        else:
-            return JsonResponse({'Authenticated': 'false'})
+        return JsonResponse({'Authenticated': 'false'})
 
 
 class EmailVerificationView(View):
@@ -225,24 +220,22 @@ class ResetPasswordView(View):
                             'success': 'true', "message": "An email was sent to your inbox."
                         })
 
-                    else:
-                        # TODO resend button # pylint: disable=fixme
-                        send_email_verification_mail(request, user)
-                        return JsonResponse({
-                            'success': 'true',
-                            "message": "pls verify your email address first then \
-                                        try again(the email was sent to your inbox)."
-                        })
+                    # TODO resend button # pylint: disable=fixme
+                    send_email_verification_mail(request, user)
+                    return JsonResponse({
+                        'success': 'true',
+                        "message": "pls verify your email address first then \
+                                    try again(the email was sent to your inbox)."
+                    })
 
             # TODO resend button # pylint: disable=fixme
             # Just for tricking bad guys
             return JsonResponse({'success': 'true', "message": "An email was sent to your inbox."})
 
-        else:
-            errors = []
-            for key, value in form.errors.items():
-                errors += key + ": " + value
-            return JsonResponse({'success': 'false', 'errors': errors})
+        errors = []
+        for key, value in form.errors.items():
+            errors += key + ": " + value
+        return JsonResponse({'success': 'false', 'errors': errors})
 
 
 class PasswordResetConfirmView(View):
@@ -270,8 +263,7 @@ class PasswordResetConfirmView(View):
                 'success': 'true', 'location': '/success/passwordResetDone'
             })
 
-        else:
-            errors = []
-            for key, value in form.errors.items():
-                errors += key + ": " + value
-            return JsonResponse({'success': 'false', 'errors': errors})
+        errors = []
+        for key, value in form.errors.items():
+            errors += key + ": " + value
+        return JsonResponse({'success': 'false', 'errors': errors})

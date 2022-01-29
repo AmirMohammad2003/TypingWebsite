@@ -1,12 +1,16 @@
-from django.urls import path  # , include
+"""accounts.urls
+url routings for the account application.
+"""
+
+from django.urls import path
 
 from .views import (CheckIfAuthenticated, EmailVerificationView, LoginView,
                     LogoutView, PasswordResetConfirmView, RegistrationView,
                     ResetPasswordView)
 
-app_name = 'accounts'
+app_name = 'accounts'  # pylint: disable=invalid-name
 
-# TODO:implement these views
+# TODO:implement these views # pylint: disable=fixme
 # auth/ password_change/[name='password_change']
 # auth/ password_change/done/ [name='password_change_done']
 

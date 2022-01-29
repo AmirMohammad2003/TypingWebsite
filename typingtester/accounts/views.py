@@ -24,7 +24,7 @@ class LoginView(View):
     """
 
     @method_decorator(ensure_csrf_cookie)
-    def post(self, request, *args, **kwargs):  # pylint: disable=unused-argument
+    def post(self, request, *args, **kwargs):  # pylint: disable=unused-argument, no-self-use
         """
         POST request handler.
         receives username, password and remember_me from request.
@@ -73,7 +73,7 @@ class RegistrationView(View):
     """
 
     @method_decorator(ensure_csrf_cookie)
-    def post(self, request, *args, **kwargs):  # pylint: disable=unused-argument
+    def post(self, request, *args, **kwargs):  # pylint: disable=unused-argument, no-self-use
         """
         POST request handler.
         receives username, password1, password2 and email from request.
@@ -115,7 +115,7 @@ class LogoutView(View):
     """
 
     @method_decorator(ensure_csrf_cookie)
-    def post(self, request, *args, **kwargs):  # pylint: disable=unused-argument
+    def post(self, request, *args, **kwargs):  # pylint: disable=unused-argument, no-self-use
         """
         POST request handler.
         :param request: request object
@@ -137,7 +137,7 @@ class CheckIfAuthenticated(View):
     """
 
     @method_decorator(ensure_csrf_cookie)
-    def post(self, request, *args, **kwargs):  # pylint: disable=unused-argument
+    def post(self, request, *args, **kwargs):  # pylint: disable=unused-argument, no-self-use
         """
         POST request handler.
         :param request: request object
@@ -157,7 +157,7 @@ class EmailVerificationView(View):
     """
 
     @method_decorator(csrf_exempt)
-    def get(self, request, uidb64, token, *args, **kwargs):  # pylint: disable=unused-argument
+    def get(self, request, uidb64, token, *args, **kwargs):  # pylint: disable=unused-argument, no-self-use
         """
         GET request handler.
         :param request: request object
@@ -192,7 +192,7 @@ class ResetPasswordView(View):
     """
 
     @method_decorator(ensure_csrf_cookie)
-    def post(self, request, *args, **kwargs):  # pylint: disable=unused-argument
+    def post(self, request, *args, **kwargs):  # pylint: disable=unused-argument, no-self-use
         """
         POST request handler.
         receives email from request.
@@ -247,7 +247,7 @@ class PasswordResetConfirmView(View):
     """
 
     @method_decorator(ensure_csrf_cookie)
-    def post(self, request, *args, **kwargs):  # pylint: disable=unused-argument
+    def post(self, request, *args, **kwargs):  # pylint: disable=unused-argument, no-self-use
         """
         POST request handler.
         receives password1 and password2 from request.

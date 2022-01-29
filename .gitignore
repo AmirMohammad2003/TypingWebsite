@@ -6,3 +6,4 @@ typingtester/frontend/front-react/README.md
 __pycache__
 .vscode
 sent_emails
+migrations

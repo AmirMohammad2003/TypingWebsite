@@ -11,7 +11,7 @@ from django.db.models.aggregates import Count
 UserModel = get_user_model()
 
 
-class QuoteManager(models.Manager):
+class QuoteManager(models.Manager):  # pylint: disable=too-few-public-methods
     """
     a quote manager to provide getting quotes randomly
     """

@@ -115,8 +115,18 @@ class UpdateTotalTestsTime(APIView):
         receives the time the user spent on the test.
         increments the total time spent on tests by the user.
         """
+        time = float(request.data['time'])
+        if time < 0:
+            return Response(
+                {
+                    'success': 'false',
+                    'error': 'time cannot be negative'
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         user = request.user
-        user.statistics.time_typing += float(request.data['time'])
+        user.statistics.time_typing += time
         user.statistics.save()
 
         return Response({'success': 'true'}, status=status.HTTP_200_OK)
@@ -132,7 +142,7 @@ class InsertUserTest(APIView):
 
     permission_classes = (IsAuthenticated,)
 
-    @method_decorator(ensure_csrf_cookie)
+    @ method_decorator(ensure_csrf_cookie)
     def post(self, request):  # pylint: disable=no-self-use
         """
         :param request:
@@ -159,7 +169,7 @@ class LoadTestRecords(APIView):
 
     permission_classes = (IsAuthenticated,)
 
-    @method_decorator(ensure_csrf_cookie)
+    @ method_decorator(ensure_csrf_cookie)
     def post(self, request):  # pylint: disable=no-self-use
         """
         :param request:
@@ -188,7 +198,7 @@ class LoadStatistics(APIView):
 
     permission_classes = (IsAuthenticated,)
 
-    @method_decorator(ensure_csrf_cookie)
+    @ method_decorator(ensure_csrf_cookie)
     def post(self, request):  # pylint: disable=no-self-use
         """
         :param request:

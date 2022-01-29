@@ -1,19 +1,27 @@
+"""accounts.tests
+Test Cases Defined for Accounts Application
+"""
+
 import json
 
 from django.core import mail
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.contrib.auth import get_user_model
 
 
 class LoginAndLogoutTestCases(TestCase):
+    """Login and Logout Test Cases"""
 
     def setUp(self):
-        self.UserModel = get_user_model()
-        self.client = Client()
-        self.user = self.UserModel.objects.create_user(
+        self.user_model = get_user_model()
+        self.user = self.user_model.objects.create_user(
             username='test', password='test', email='test@test.com')
 
     def test_login(self):
+        """
+        Test Login if the user is active and his/her email is verified
+        and the credentials are valid
+        """
         self.user.is_active = True
         self.user.is_email_verified = True
         self.user.save()
@@ -24,7 +32,19 @@ class LoginAndLogoutTestCases(TestCase):
         self.assertEqual(_res['success'], 'true')
         self.assertEqual(_res['username'], 'test')
 
+    def test_login_wrong_password(self):
+        """Test Login with wrong password"""
+        self.user.is_active = True
+        self.user.is_email_verified = True
+        self.user.save()
+        response = self.client.post('/auth/login/',
+                                    {'username': 'test', 'password': 'test1'})
+        self.assertEqual(response.status_code, 200)
+        _res = json.loads(response.content)
+        self.assertEqual(_res['success'], 'false')
+
     def test_login_inactive_user(self):
+        """test login if the user is inactive"""
         self.user.is_active = False
         self.user.is_email_verified = True
         self.user.save()
@@ -35,6 +55,7 @@ class LoginAndLogoutTestCases(TestCase):
         self.assertEqual(_res['success'], 'false')
 
     def test_login_not_verified_email(self):
+        """test login if the user's email is not verified"""
         self.user.is_active = True
         self.user.is_email_verified = False
         self.user.save()
@@ -45,6 +66,7 @@ class LoginAndLogoutTestCases(TestCase):
         self.assertEqual(_res['success'], 'false')
 
     def test_logout(self):
+        """Test Logout if the user is logged in"""
         self.client.login(username='test', password='test')
         response = self.client.post('/auth/logout/')
         self.assertEqual(response.status_code, 200)
@@ -52,6 +74,7 @@ class LoginAndLogoutTestCases(TestCase):
         self.assertEqual(_res['success'], 'true')
 
     def test_logout_not_logged_in(self):
+        """Test Logout if the user is not logged in"""
         self.client.logout()
         response = self.client.post('/auth/logout/')
         self.assertEqual(response.status_code, 200)
@@ -60,17 +83,20 @@ class LoginAndLogoutTestCases(TestCase):
 
 
 class CheckIfAuthenticatedTestCases(TestCase):
+    """
+    Test the CheckIfAuthenticated view
+    """
 
     def setUp(self):
-        self.UserModel = get_user_model()
-        self.client = Client()
-        self.user = self.UserModel.objects.create_user(
+        self.user_model = get_user_model()
+        self.user = self.user_model.objects.create_user(
             username='test', password='test', email='test@test.com')
         self.user.is_active = True
         self.user.is_email_verified = True
         self.user.save()
 
     def test_check_if_authenticated_true(self):
+        """Test if the user is authenticated"""
         self.client.login(username='test', password='test')
         response = self.client.post('/auth/check/')
         self.assertEqual(response.status_code, 200)
@@ -78,6 +104,7 @@ class CheckIfAuthenticatedTestCases(TestCase):
         self.assertEqual(_res['Authenticated'], 'true')
 
     def test_check_if_authenticated_false(self):
+        """Test if the user is not authenticated"""
         response = self.client.post('/auth/check/')
         self.assertEqual(response.status_code, 200)
         _res = json.loads(response.content)
@@ -85,12 +112,13 @@ class CheckIfAuthenticatedTestCases(TestCase):
 
 
 class RegisterTestCases(TestCase):
+    """Test cases for registering a new user"""
 
     def setUp(self):
-        self.UserModel = get_user_model()
-        self.client = Client()
+        self.user_model = get_user_model()
 
     def test_register_success(self):
+        """Test a successful registration"""
         response = self.client.post(
             '/auth/register/',
             {
@@ -114,7 +142,8 @@ class RegisterTestCases(TestCase):
         self.assertEqual(_res['Authenticated'], 'true')
 
     def test_register_username_exists(self):
-        self.UserModel.objects.create_user(
+        """Test if the username already exists"""
+        self.user_model.objects.create_user(
             username='test4', password='test', email='test4@test.com'
         )
         response = self.client.post(
@@ -129,7 +158,8 @@ class RegisterTestCases(TestCase):
         self.assertEqual(_res['success'], 'false')
 
     def test_register_email_exists(self):
-        self.UserModel.objects.create_user(
+        """Test if the email already exists"""
+        self.user_model.objects.create_user(
             username='test', password='test', email='test@test.com'
         )
         response = self.client.post(
@@ -144,6 +174,7 @@ class RegisterTestCases(TestCase):
         self.assertEqual(_res['success'], 'false')
 
     def test_register_invalid_password(self):
+        """Test if the password is invalid"""
         response = self.client.post(
             '/auth/register/',
             {
@@ -156,6 +187,7 @@ class RegisterTestCases(TestCase):
         self.assertEqual(_res['success'], 'false')
 
     def test_register_unverified_email_login(self):
+        """Test if the user's email is not verified"""
         response = self.client.post(
             '/auth/register/',
             {
@@ -177,12 +209,13 @@ class RegisterTestCases(TestCase):
 
 
 class VerifyEmailTestCases(TestCase):
+    """Test cases for verifying a user's email"""
 
     def setUp(self):
-        self.UserModel = get_user_model()
-        self.client = Client()
+        self.user_model = get_user_model()
 
     def test_verify_email_failure(self):
+        """Test if the verification link is invalid"""
         response = self.client.get(
             '/auth/verify/asdf/adsfasdfasdfasdfasdfasdf/')
         self.assertEqual(response.status_code, 200)
@@ -191,16 +224,16 @@ class VerifyEmailTestCases(TestCase):
 
 
 class ForgotPasswordTestCases(TestCase):
+    """Test cases for resetting a user's password"""
 
     def setUp(self):
-        self.UserModel = get_user_model()
-        self.client = Client()
-
-    def test_forgot_password_success(self):
-        self.UserModel.objects.create_user(
+        self.user_model = get_user_model()
+        self.user = self.user_model.objects.create_user(
             username='test', password='test', email='test@test.com'
         )
 
+    def test_forgot_password_success(self):
+        """Test a successful password reset"""
         response = self.client.post(
             "/auth/reset/",
             {'email': 'test@test.com'}
@@ -236,6 +269,7 @@ class ForgotPasswordTestCases(TestCase):
         self.assertEqual(_res['Authenticated'], 'true')
 
     def test_forgot_password_failure(self):
+        """Test a if the email address is invalid"""
         response = self.client.post(
             "/auth/reset/",
             {'email': 'dummy@test.com'}
@@ -247,9 +281,7 @@ class ForgotPasswordTestCases(TestCase):
         self.assertEqual(len(mail.outbox), 0)
 
     def test_forgot_password_logged_in(self):
-        self.user = self.UserModel.objects.create_user(
-            username='test', password='test', email='test@test.com'
-        )
+        """Test if the user is already logged in"""
         self.user.is_email_verified = True
         self.user.is_active = True
         self.user.save()
@@ -269,6 +301,7 @@ class ForgotPasswordTestCases(TestCase):
         self.assertContains(response, 'logged in')
 
     def test_forgot_password_confirm_bad_token(self):
+        """Test if the token or uidb64 is invalid"""
         response = self.client.post(
             '/auth/reset/confirm/',
             {

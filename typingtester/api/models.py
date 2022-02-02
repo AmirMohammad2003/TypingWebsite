@@ -85,6 +85,7 @@ class UserTest(models.Model):
     accuracy = models.PositiveIntegerField()
     quote = models.ForeignKey(
         Quote, on_delete=models.SET_NULL, related_name="quote", null=True, blank=True)
+    date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.quote.content[:50]}..."  # pylint: disable=no-member

@@ -286,7 +286,7 @@ class TestLoadUserTests(TestCase):
         Tests that the load user tests view requires the user to be logged in,
         but the user is not logged in.
         """
-        response = self.client.post('/api/load-test-records/')
+        response = self.client.get('/api/load-test-records/')
         self.assertEqual(response.status_code, 403)
 
     def test_load_user_tests(self):
@@ -295,7 +295,7 @@ class TestLoadUserTests(TestCase):
         and the user is logged in.
         """
         self.client.login(username='test', password='test')
-        response = self.client.post('/api/load-test-records/')
+        response = self.client.get('/api/load-test-records/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, [])
         self.client.post(
@@ -307,11 +307,12 @@ class TestLoadUserTests(TestCase):
                 'acc': 10
             }
         )
-        response = self.client.post('/api/load-test-records/')
+        response = self.client.get('/api/load-test-records/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['time'], 10)
         self.assertEqual(response.data[0]['cpm'], 10)
-        self.assertEqual(response.data[0]['acc'], 10)
+        self.assertEqual(response.data[0]['accuracy'], 10)
         self.assertEqual(response.data[0]['quote_id'],
                          self.quote.id)  # pylint: disable=no-member
+        self.assertTrue('date' in response.data[0])

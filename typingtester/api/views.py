@@ -6,11 +6,13 @@ from django.middleware.csrf import get_token
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from rest_framework import status
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Quote
+from .serializers import RecordSerializer
 
 
 class LoadQuote(APIView):
@@ -142,7 +144,7 @@ class InsertUserTest(APIView):
 
     permission_classes = (IsAuthenticated,)
 
-    @ method_decorator(ensure_csrf_cookie)
+    @method_decorator(ensure_csrf_cookie)
     def post(self, request):  # pylint: disable=no-self-use
         """
         :param request:
@@ -169,33 +171,22 @@ class InsertUserTest(APIView):
         return Response({'success': 'true'}, status=status.HTTP_201_CREATED)
 
 
-class LoadTestRecords(APIView):
+class LoadTestRecords(ListAPIView):
     """
     LoadTestRecords
     loads all test records for the user.
     only authenticated users can use this view.
-    accepts post requests.
+    accepts get requests.
     """
 
     permission_classes = (IsAuthenticated,)
+    serializer_class = RecordSerializer
 
-    @ method_decorator(ensure_csrf_cookie)
-    def post(self, request):  # pylint: disable=no-self-use
+    def get_queryset(self):
         """
-        :param request:
-        :return all test records for the user.
+        :return: all test records for the user.
         """
-        user = request.user
-        tests = user.tests.all()
-        response = []
-        for test in tests:
-            response.append({
-                'time': test.time,
-                'cpm': test.cpm,
-                'acc': test.accuracy,
-                'quote_id': test.quote_id
-            })
-        return Response(response, status=status.HTTP_200_OK)
+        return self.request.user.tests.all()
 
 
 class LoadStatistics(APIView):
@@ -208,7 +199,7 @@ class LoadStatistics(APIView):
 
     permission_classes = (IsAuthenticated,)
 
-    @ method_decorator(ensure_csrf_cookie)
+    @method_decorator(ensure_csrf_cookie)
     def post(self, request):  # pylint: disable=no-self-use
         """
         :param request:

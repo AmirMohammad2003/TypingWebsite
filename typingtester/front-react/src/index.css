@@ -160,6 +160,20 @@ body {
   letter-spacing: -6px;
 }
 
+.result-key {
+  letter-spacing: 2px;
+  color: #616161;
+  font-size: 12pt;
+  margin-bottom: -20px;
+}
+
+.result-value {
+  color: #f66e0d;
+  font-size: 60pt;
+  font-weight: 100;
+  letter-spacing: -6px;
+}
+
 .input-generic {
   border: none;
   outline: none;

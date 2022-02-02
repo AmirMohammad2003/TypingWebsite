@@ -50,4 +50,26 @@ const IconButtonLink = ({
   );
 };
 
-export { IconButtonWithPopup, IconButtonLink };
+const ResultBox = ({ _key, value }) => {
+  return (
+    <>
+      <div className="detail">
+        <div className="result-key">{_key}</div>
+        <div className="result-value">{value}</div>
+      </div>
+    </>
+  );
+};
+
+const DetailBox = ({ _key, value }) => {
+  return (
+    <>
+      <div className="detail">
+        <div className="detail-key">{_key}</div>
+        <div className="detail-value">{value}</div>
+      </div>
+    </>
+  );
+};
+
+export { IconButtonWithPopup, IconButtonLink, ResultBox };

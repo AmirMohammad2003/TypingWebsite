@@ -124,7 +124,7 @@ const loadStatistics = async () => {
 
 const loadTestRecords = async () => {
   const requestOptions = {
-    method: "POST",
+    method: "GET",
     headers: {
       "X-CSRFtoken": await getCsrfToken(),
       Accept: "application/json",

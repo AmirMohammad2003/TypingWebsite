@@ -1,4 +1,4 @@
-import React, { useState, useEffect /*, useReducer*/ } from "react";
+import React, { useState, useEffect } from "react";
 import { Container } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import { IconButtonLink } from "./smallComponents";
@@ -7,10 +7,10 @@ import { handleLogoutSubmission } from "../lookups/auth";
 
 export default () => {
   const [authenticated, setAuthenticated] = useState([false, null]); // authenticated[1] : username
-  // const [any, forceUpdate] = useReducer((num) => num + 1, 0);
-  useEffect(async () => {
-    setAuthenticated(await isAuthenticated());
-    // forceUpdate();
+  useEffect(() => {
+    (async () => {
+      setAuthenticated(await isAuthenticated());
+    })();
   }, []);
   return (
     <>
@@ -37,6 +37,7 @@ export default () => {
                       e.preventDefault();
                       handleLogoutSubmission();
                       setAuthenticated([false, null]);
+                      window.location.href = "/";
                     }}
                   />
                 )}

@@ -1,19 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { calculateWpmCpm, calculateAccuracy } from "../util";
-import { IconButtonWithPopup } from "./smallComponents";
+import { IconButtonWithPopup, ResultBox } from "./smallComponents";
 import { Grid } from "@mui/material";
 import { SendTestRecordData } from "../lookups/requests";
-
-const ResultBox = ({ _key, value }) => {
-  return (
-    <>
-      <div className="detail">
-        <div className="result-key">{_key}</div>
-        <div className="result-value">{value}</div>
-      </div>
-    </>
-  );
-};
+import { isAuthenticatedStrict } from "../lookups/lookups";
 
 const Results = ({
   quote_id,
@@ -34,8 +24,10 @@ const Results = ({
 
     setResults([acc, cpm, wpm]);
 
-    SendTestRecordData(quote_id, end_time - start_time, cpm, acc);
-  }, []);
+    if (isAuthenticatedStrict) {
+      SendTestRecordData(quote_id, end_time - start_time, cpm, acc);
+    }
+  }, [end_time, start_time, letters_typed, errors, quote_id]);
 
   let [acc, cpm, wpm] = results;
   return (

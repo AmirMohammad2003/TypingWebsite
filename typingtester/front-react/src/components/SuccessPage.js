@@ -42,6 +42,9 @@ export default () => {
               and login to your account.
             </p>
           )) ||
+          (params.type === "passwordChanged" && (
+            <p>Your Password Changed Successfully.</p>
+          )) ||
           navigate("/")}
       </div>
     </>

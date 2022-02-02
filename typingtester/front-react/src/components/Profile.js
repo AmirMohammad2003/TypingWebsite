@@ -10,7 +10,12 @@ import {
   Paper,
 } from "@mui/material";
 import { ResultBox } from "./smallComponents";
-import { loadStatistics, loadTestRecords } from "../lookups/lookups";
+import {
+  loadStatistics,
+  loadTestRecords,
+  fetchUserInfo,
+} from "../lookups/lookups";
+import { useNavigate } from "react-router-dom";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import { styled } from "@mui/material/styles";
 import { convertDateToFormattedTime, convertSecondsToTime } from "../util";
@@ -43,17 +48,52 @@ const StyledTableRow = styled(TableRow)(() => ({
 export default () => {
   const [statistics, setStatistics] = useState(null);
   const [testRecords, setTestRecords] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
+
+  const navigate = useNavigate();
+
   useEffect(() => {
     (async () => {
       setStatistics(await loadStatistics());
       setTestRecords(await loadTestRecords());
+      setUserInfo(await fetchUserInfo());
     })();
   }, []);
+  console.log(userInfo);
 
   return (
     <>
       {(statistics && (
         <Grid container spacing={3}>
+          {userInfo && (
+            <Grid item xs={12}>
+              <Grid container spacing={3}>
+                <Grid item xs={4}>
+                  <div align="left" className="user-detail">
+                    Username: {userInfo.username}
+                  </div>
+                </Grid>
+                <Grid item xs={4}>
+                  <div align="left" className="user-detail">
+                    Email: {userInfo.email}
+                  </div>
+                </Grid>
+                <Grid item xs={4}>
+                  <div
+                    align="left"
+                    className="user-detail"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      navigate("/account/change");
+                    }}
+                  >
+                    Change Password
+                  </div>
+                </Grid>
+              </Grid>
+            </Grid>
+          )}
+          <br />
           <Grid item xs={12} sm={6} md={4}>
             <div align="left">
               <ResultBox
@@ -145,7 +185,7 @@ export default () => {
                           align="center"
                           style={{ fontFamily: "Roboto mono !important" }}
                         >
-                          {row.cpm / 5}
+                          {Math.round(row.cpm / 5)}
                         </StyledTableCell>
                         <StyledTableCell
                           align="center"

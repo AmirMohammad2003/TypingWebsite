@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { Grid, Alert, Container } from "@mui/material";
-import { useParams } from "react-router-dom";
-import { handleResetPasswordConfirmation } from "../lookups/auth";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Alert, Container } from "@mui/material";
+import { handleChangePassword } from "../lookups/auth";
 export default () => {
   const [errors, setErrors] = useState([]);
   // const [info, setInfo] = useState([]);
-  const params = useParams();
+
+  const navigate = useNavigate();
 
   return (
     <>
@@ -24,29 +25,38 @@ export default () => {
       <div className="center-flex" align="center">
         <form
           onSubmit={(e) => {
-            handleResetPasswordConfirmation(
+            handleChangePassword(
               e,
-              params.uidb64,
-              params.token,
               (errors) => {
                 setErrors(errors);
               },
               (location) => {
-                window.location.replace = location;
-              }
+                // window.location.href = location;
+                navigate(location);
+              },
+              "/success/passwordChanged"
             );
             e.preventDefault();
           }}
         >
           <p style={{ color: "#f5e6c8", fontSize: "18pt" }}>
-            Reset Your Password
+            Change Your Password
           </p>
           <br />
           <input
             type="password"
             className="input-generic"
-            placeholder="Your new Password"
-            name="password1"
+            placeholder="Old Password"
+            name="old_password"
+          />
+          <br />
+          <br />
+          <br />
+          <input
+            type="password"
+            className="input-generic"
+            placeholder="New Password"
+            name="new_password1"
           />
           <br />
           <br />
@@ -54,7 +64,7 @@ export default () => {
             type="password"
             className="input-generic"
             placeholder="Confirm Your password"
-            name="password2"
+            name="new_password2"
           />
           <br />
           <br />

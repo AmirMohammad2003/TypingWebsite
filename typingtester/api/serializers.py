@@ -12,7 +12,7 @@ class RecordSerializer(serializers.ModelSerializer):
     recordSerializer
     serializer for the UserTest model.
     """
-    class Meta:
+    class Meta:  # pylint: disable=too-few-public-methods
         """
         meta for the recordSerializer.
         """

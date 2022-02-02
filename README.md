@@ -23,9 +23,13 @@
 
   - [ ] resend button
 
-- [ ] password change
+- [x] password change
 
 2. User Profile
+
+- [x] Statistics about user
+- [x] Test records
+
 3. Live Wpm/Cpm/Acc
 4. Leader board
 5. Improving Testing page

@@ -5,12 +5,11 @@ like the registration form and the login form.
 
 from django import forms
 from django.contrib.auth import get_user_model, password_validation
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import PasswordChangeForm as _PasswordChangeForm, UserCreationForm
 from django.contrib.auth.tokens import default_token_generator
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.utils.http import urlsafe_base64_decode
-
 
 user_model = get_user_model()
 
@@ -129,3 +128,24 @@ class PasswordResetConfirmForm(forms.Form):
             user.save()
 
         return user
+
+
+class PasswordChangeForm(_PasswordChangeForm):
+    """
+    Password change form
+    used for changing the password.
+    """
+
+    def clean_new_password2(self):
+        """
+        checks if the old password is correct.
+        and raises an error if it isn't.
+        """
+        password = super().clean_new_password2()
+        if password == self.cleaned_data.get('old_password'):
+            raise ValidationError(
+                'The new password must be different from the old password.',
+                code='password_mismatch',
+            )
+
+        return password

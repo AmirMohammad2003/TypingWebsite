@@ -2,7 +2,8 @@
 Endpoints for user authentication and authorization.
 """
 from django.conf import settings
-from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.contrib.auth import (authenticate, get_user_model, login, logout,
+                                 update_session_auth_hash)
 from django.contrib.auth.tokens import default_token_generator
 from django.http import JsonResponse
 from django.shortcuts import redirect
@@ -10,10 +11,32 @@ from django.utils.decorators import method_decorator
 from django.utils.http import urlsafe_base64_decode
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
+from django.views.decorators.debug import sensitive_post_parameters
 
 from .forms import (PasswordResetConfirmForm, PasswordResetEmailSubmissionForm,
-                    UserRegistrationForm)
+                    UserRegistrationForm, PasswordChangeForm)
 from .mail import send_email_verification_mail, send_reset_password_mail
+
+
+class APILoginRequiredMixin:  # pylint: disable=too-few-public-methods
+    """
+    APILoginRequiredMixin
+    Mixin for API views that require a user to be logged in.
+    """
+
+    not_logged_in_message = 'You must be logged in to access this page.'
+
+    def dispatch(self, request, *args, **kwargs):
+        """
+        checks if the user is logged in and returns an error if not.
+        """
+        if not request.user.is_authenticated:
+            return JsonResponse(
+                {'success': 'false', 'message': self.not_logged_in_message},
+                status=401  # unauthorized
+            )
+
+        return super().dispatch(request, *args, **kwargs)
 
 
 class LoginView(View):
@@ -22,6 +45,10 @@ class LoginView(View):
     csrf_cookie is required.
     only accepts POST requests.
     """
+
+    @method_decorator(sensitive_post_parameters())
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     @method_decorator(ensure_csrf_cookie)
     def post(self, request, *args, **kwargs):  # pylint: disable=unused-argument, no-self-use
@@ -72,6 +99,10 @@ class RegistrationView(View):
     only accepts POST requests.
     """
 
+    @method_decorator(sensitive_post_parameters())
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
     @method_decorator(ensure_csrf_cookie)
     def post(self, request, *args, **kwargs):  # pylint: disable=unused-argument, no-self-use
         """
@@ -103,7 +134,7 @@ class RegistrationView(View):
 
         errors = []
         for key, value in form.errors.items():
-            errors += key + ": " + value
+            errors += [key + ": " + value[0]]
         return JsonResponse({'success': 'false', 'errors': errors})
 
 
@@ -155,6 +186,10 @@ class EmailVerificationView(View):
     endpoint for verifying email address.
     only accepts GET requests.
     """
+
+    @method_decorator(sensitive_post_parameters())
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     @method_decorator(csrf_exempt)
     def get(self, request, uidb64, token, *args, **kwargs):  # pylint: disable=unused-argument, no-self-use
@@ -234,7 +269,8 @@ class ResetPasswordView(View):
 
         errors = []
         for key, value in form.errors.items():
-            errors += key + ": " + value
+            errors += [key + ": " + value[0]]
+
         return JsonResponse({'success': 'false', 'errors': errors})
 
 
@@ -245,6 +281,10 @@ class PasswordResetConfirmView(View):
     csrf_cookie is required.
     only accepts POST requests.
     """
+
+    @method_decorator(sensitive_post_parameters())
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     @method_decorator(ensure_csrf_cookie)
     def post(self, request, *args, **kwargs):  # pylint: disable=unused-argument, no-self-use
@@ -265,5 +305,69 @@ class PasswordResetConfirmView(View):
 
         errors = []
         for key, value in form.errors.items():
-            errors += key + ": " + value
+            errors += [key + ": " + value[0]]
+        return JsonResponse({'success': 'false', 'errors': errors})
+
+
+class FetchUserInformation(APILoginRequiredMixin, View):
+    """FetchUserInformation
+    endpoint for fetching user information.
+    csrf_cookie is required.
+    only accepts POST requests.
+    """
+
+    @method_decorator(ensure_csrf_cookie)
+    def post(self, request, *args, **kwargs):  # pylint: disable=unused-argument, no-self-use
+        """
+        POST request handler.
+        receives email from request.
+        :param request: request object
+        :return JsonResponse with success or failure status and user information
+        if the request is successful, user information is returned.
+        """
+
+        # if the user is logged in so the account is active and verified
+        # so we don't need to check for that.
+        # but i am doing that here for the sake of security.
+        if request.user.is_email_verified:
+            return JsonResponse({
+                'success': 'true',
+                'username': request.user.username,
+                'email': request.user.email
+            })
+
+        return JsonResponse({'success': 'false', 'message': "Access Denied"}, status=403)
+
+
+class PasswordChangeView(APILoginRequiredMixin, View):
+    """PasswordChangeView
+    endpoint for changing password.
+    csrf_cookie is required.
+    only accepts POST requests.
+    """
+
+    @method_decorator(sensitive_post_parameters())
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    @method_decorator(ensure_csrf_cookie)
+    def post(self, request, *args, **kwargs):  # pylint: disable=unused-argument, no-self-use
+        """
+        POST request handler.
+        receives password1 and password2 from request.
+        :param request: request object
+        :return JsonResponse with success or failure status
+        if the request is successful, password is changed.
+        """
+
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, request.user)
+            return JsonResponse({'success': 'true'})
+
+        errors = []
+        for key, value in form.errors.items():
+            errors += [key + ": " + value[0]]
+
         return JsonResponse({'success': 'false', 'errors': errors})

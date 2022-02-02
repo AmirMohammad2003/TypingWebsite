@@ -90,7 +90,7 @@ const LoginPage = () => {
                   setErrors(errors);
                 },
                 () => {
-                  window.location.href = "/";
+                  window.location.replace = "/";
                 }
               );
             }}

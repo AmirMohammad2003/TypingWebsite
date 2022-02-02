@@ -4,9 +4,10 @@ url routings for the account application.
 
 from django.urls import path
 
-from .views import (CheckIfAuthenticated, EmailVerificationView, LoginView,
-                    LogoutView, PasswordResetConfirmView, RegistrationView,
-                    ResetPasswordView)
+from .views import (CheckIfAuthenticated, EmailVerificationView,
+                    FetchUserInformation, LoginView, LogoutView,
+                    PasswordChangeView, PasswordResetConfirmView,
+                    RegistrationView, ResetPasswordView)
 
 app_name = 'accounts'  # pylint: disable=invalid-name
 
@@ -23,5 +24,8 @@ urlpatterns = [
          name='email_verification'),
     path('reset/', ResetPasswordView.as_view(), name='password_reset'),
     path('reset/confirm/', PasswordResetConfirmView.as_view(),
-         name='password_reset_confirm')
+         name='password_reset_confirm'),
+    path('user/info/', FetchUserInformation.as_view(), name='fetch_user_info'),
+    path('password/change/', PasswordChangeView.as_view(),
+         name='password_change'),
 ]

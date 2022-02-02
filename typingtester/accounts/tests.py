@@ -315,3 +315,100 @@ class ForgotPasswordTestCases(TestCase):
         _res = json.loads(response.content)
         self.assertEqual(_res['success'], 'false')
         self.assertEqual(len(mail.outbox), 0)
+
+
+class FetchUserInformationTestCase(TestCase):
+    """Test cases for fetching user information"""
+
+    def setUp(self):
+        self.user_model = get_user_model()
+        self.user = self.user_model.objects.create_user(
+            username='test', password='test', email='test@test.com'
+        )
+        self.user.is_active = True
+        self.user.is_email_verified = True
+        self.user.save()
+
+    def test_fetch_user_information_success(self):
+        """Test if the user information is fetched successfully"""
+        self.client.login(username='test', password='test')
+        response = self.client.post('/auth/user/info/')
+        self.assertEqual(response.status_code, 200)
+        _res = json.loads(response.content)
+        self.assertEqual(_res['success'], 'true')
+        self.assertEqual(_res['username'], 'test')
+        self.assertEqual(_res['email'], 'test@test.com')
+
+    def test_fetch_user_information_notloggedin(self):
+        """Test if the user information is fetched successfully"""
+        response = self.client.post('/auth/user/info/')
+        self.assertEqual(response.status_code, 401)
+
+    def test_fetch_user_information_notverified(self):
+        """Test if the user information is fetched successfully"""
+        self.user.is_email_verified = False
+        self.user.save()
+        self.client.login(username='test', password='test')
+        response = self.client.post('/auth/user/info/')
+        self.assertEqual(response.status_code, 403)
+
+
+class ChangePasswordTestCases(TestCase):
+    """Test cases for changing a user's password"""
+
+    def setUp(self):
+        self.user_model = get_user_model()
+        self.user = self.user_model.objects.create_user(
+            username='test', password='test', email='test@test.com'
+        )
+        self.user.is_active = True
+        self.user.is_email_verified = True
+        self.user.save()
+
+    def test_change_password_success(self):
+        """Test if the user's password is changed successfully"""
+        self.client.login(username='test', password='test')
+        response = self.client.post(
+            '/auth/password/change/',
+            {'old_password': 'test', 'new_password1': 'testtesttest',
+             'new_password2': 'testtesttest'}
+        )
+        self.assertEqual(response.status_code, 200)
+        _res = json.loads(response.content)
+        self.assertEqual(_res['success'], 'true')
+
+    def test_change_password_failure(self):
+        """Test if the user's password is not changed successfully
+        because of invalid old password"""
+        self.client.login(username='test', password='test')
+        response = self.client.post(
+            '/auth/password/change/',
+            {'old_password': 'test2', 'new_password1': 'testtesttest',
+             'new_password2': 'testtesttest'}
+        )
+        self.assertEqual(response.status_code, 200)
+        _res = json.loads(response.content)
+        self.assertEqual(_res['success'], 'false')
+
+    def test_change_password_notloggedin(self):
+        """Test if the user's password is not changed successfully
+        because of not being logged in"""
+        response = self.client.post(
+            '/auth/password/change/',
+            {'old_password': 'test', 'new_password1': 'testtesttest',
+             'new_password2': 'testtesttest'}
+        )
+        self.assertEqual(response.status_code, 401)
+
+    def test_change_password_old_password_equal_new_password(self):
+        """Test if the user's password is not changed successfully
+        because of old password is equal to new password"""
+        self.client.login(username='test', password='test')
+        response = self.client.post(
+            '/auth/password/change/',
+            {'old_password': 'test', 'new_password1': 'test',
+             'new_password2': 'test'}
+        )
+        self.assertEqual(response.status_code, 200)
+        _res = json.loads(response.content)
+        self.assertEqual(_res['success'], 'false')

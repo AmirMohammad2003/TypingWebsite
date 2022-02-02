@@ -174,10 +174,57 @@ const handleResetPasswordConfirmation = async (
     .catch((error) => console.log(error));
 };
 
+const handleChangePassword = async (
+  e,
+  errorsCallback,
+  successCallback,
+  location
+) => {
+  if (
+    e.target[0].value.trim() === "" ||
+    e.target[1].value.trim() === "" ||
+    e.target[2].value.trim() === ""
+  ) {
+    return;
+  }
+
+  if (e.target[1].value.trim() !== e.target[2].value.trim()) {
+    errorsCallback(["Passwords Should match."]);
+    return;
+  }
+  errorsCallback([]);
+
+  let data = new FormData(e.target);
+
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": await getCsrfToken(),
+      Accept: "application/json",
+      HTTP_X_REQUESTED_WITH: "XMLHttpRequest",
+      "X-Requested-With": "XMLHttpRequest",
+    },
+    credentials: "include",
+    body: data,
+  };
+  fetch("/auth/password/change/", requestOptions)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      if (data["success"] === "true") {
+        successCallback(location);
+      } else if (data["success"] === "false") {
+        errorsCallback(data["errors"]);
+      }
+    })
+    .catch((error) => console.log(error));
+};
+
 export {
   handleRegistrationSubmission,
   handleLoginSubmission,
   handleLogoutSubmission,
   handleResetPassword,
   handleResetPasswordConfirmation,
+  handleChangePassword,
 };

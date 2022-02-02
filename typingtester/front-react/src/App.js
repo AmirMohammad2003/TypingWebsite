@@ -9,6 +9,7 @@ import Base from "./components/Base";
 import TypingPage from "./components/TypingPage";
 import AccountHandler from "./components/AccountHandler";
 import ResetPasswordPage from "./components/ResetPasswordPage";
+import ChangePasswordPage from "./components/ChangePasswordPage";
 import SuccessPage from "./components/SuccessPage";
 
 // testContext = createContext()
@@ -25,6 +26,7 @@ const App = () => {
               path="account/reset/:uidb64/:token"
               element={<ResetPasswordPage />}
             />
+            <Route path="account/change/" element={<ChangePasswordPage />} />
             <Route path="success/:type" element={<SuccessPage />} />
             <Route path="*" element={<Navigate to="/" replace="true" />} />
           </Route>

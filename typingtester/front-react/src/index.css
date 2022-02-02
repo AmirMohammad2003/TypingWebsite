@@ -107,6 +107,13 @@ body {
   font-weight: bold;
 }
 
+.user-detail {
+  display: inline-block;
+  color: #616161;
+  font-size: 1em;
+  font-weight: bold;
+}
+
 .hidden {
   opacity: 0;
 }

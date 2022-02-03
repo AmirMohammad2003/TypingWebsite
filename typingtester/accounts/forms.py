@@ -5,7 +5,9 @@ like the registration form and the login form.
 
 from django import forms
 from django.contrib.auth import get_user_model, password_validation
-from django.contrib.auth.forms import PasswordChangeForm as _PasswordChangeForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm as _AuthenticationForm
+from django.contrib.auth.forms import PasswordChangeForm as _PasswordChangeForm
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.tokens import default_token_generator
 from django.core import validators
 from django.core.exceptions import ValidationError
@@ -149,3 +151,22 @@ class PasswordChangeForm(_PasswordChangeForm):
             )
 
         return password
+
+
+class AuthenticationForm(_AuthenticationForm):
+    """
+    Authentication form
+    used for logging in.
+    """
+
+    remember_me = forms.BooleanField(required=False)
+
+    field_order = ['username', 'password', 'remember_me']
+
+    def confirm_login_allowed(self, user):
+        super().confirm_login_allowed(user)
+        if not user.is_email_verified:
+            raise ValidationError(
+                'Your email is not verified. Please verify your email.',
+                code='email_not_verified',
+            )

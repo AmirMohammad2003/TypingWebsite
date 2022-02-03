@@ -2,7 +2,7 @@
 Endpoints for user authentication and authorization.
 """
 from django.conf import settings
-from django.contrib.auth import (authenticate, get_user_model, login, logout,
+from django.contrib.auth import (get_user_model, login, logout,
                                  update_session_auth_hash)
 from django.contrib.auth.tokens import default_token_generator
 from django.http import JsonResponse
@@ -13,8 +13,9 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.debug import sensitive_post_parameters
 
-from .forms import (PasswordResetConfirmForm, PasswordResetEmailSubmissionForm,
-                    UserRegistrationForm, PasswordChangeForm)
+from .forms import (AuthenticationForm, PasswordChangeForm,
+                    PasswordResetConfirmForm, PasswordResetEmailSubmissionForm,
+                    UserRegistrationForm)
 from .mail import send_email_verification_mail, send_reset_password_mail
 
 
@@ -63,33 +64,19 @@ class LoginView(View):
         if request.user.is_authenticated:
             return JsonResponse({'success': 'true', 'username': request.user.username})
 
-        # I am going to change how this works in the future.
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-
-        remember_me = request.POST.get('remember_me', None)
-
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            if not user.is_active:
-                return JsonResponse({
-                    'success': 'false', 'message': 'Invalid username or password.'
-                })
-
-            if not user.is_email_verified and not user.is_superuser:
-                return JsonResponse({
-                    'success': 'false', 'message': 'Please verify your email address.'
-                })
-
-            if remember_me is None:
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            if not form.cleaned_data['remember_me']:
                 request.session.set_expiry(0)
 
             login(request, user)
-            return JsonResponse({'success': 'true', 'username': username})
+            return JsonResponse({'success': 'true', 'username': user.username})
 
-        return JsonResponse(
-            {'success': 'false', 'message': 'Invalid username or password'}
-        )
+        errors = []
+        for key, value in form.errors.items():
+            errors += [key + ": " + value[0]]
+        return JsonResponse({'success': 'false', 'errors': errors})
 
 
 class RegistrationView(View):

@@ -16,7 +16,8 @@ class LoginAndLogoutTestCases(TestCase):
     def setUp(self):
         self.user_model = get_user_model()
         self.user = self.user_model.objects.create_user(
-            username='test', password='test', email='test@test.com')
+            username='test', password='test', email='test@test.com'
+        )
 
     def test_login(self):
         """
@@ -26,8 +27,10 @@ class LoginAndLogoutTestCases(TestCase):
         self.user.is_active = True
         self.user.is_email_verified = True
         self.user.save()
-        response = self.client.post('/auth/login/',
-                                    {'username': 'test', 'password': 'test'})
+        response = self.client.post(
+            '/auth/login/',
+            {'username': 'test', 'password': 'test'}
+        )
         self.assertEqual(response.status_code, 200)
         _res = json.loads(response.content)
         self.assertEqual(_res['success'], 'true')
@@ -288,7 +291,8 @@ class ForgotPasswordTestCases(TestCase):
         self.user.save()
 
         self.client.post(
-            '/auth/login/', {'username': 'test', 'password': 'test'}
+            '/auth/login/', {'username': 'test',
+                             'password': 'test'}
         )
 
         response = self.client.post(

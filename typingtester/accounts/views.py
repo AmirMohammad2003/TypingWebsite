@@ -8,7 +8,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
-from django.utils.http import urlsafe_base64_decode
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.debug import sensitive_post_parameters
@@ -122,6 +122,12 @@ class RegistrationView(View):
             user = form.save()
             # TODO resend button  # pylint: disable=fixme
             if send_email_verification_mail(request, user):
+                if not request.session.session_key:
+                    request.session.create()
+
+                request.session['_id'] = urlsafe_base64_encode(
+                    str(user.id).encode()
+                )
                 return JsonResponse({
                     'success': 'unknown',
                     'message': "Please check your inbox to verify your email address"
@@ -371,3 +377,51 @@ class PasswordChangeView(APILoginRequiredMixin, View):
             errors += [key + ": " + value[0]]
 
         return JsonResponse({'success': 'false', 'errors': errors})
+
+
+# not protected against click spamming because it's not a massive website.
+# I probably will add rate limiting in the future.
+class ResendVerificationEmail(View):
+    """ResendVerificationEmail
+    endpoint for resending verification email.
+    csrf_cookie is required.
+    only accepts POST requests.
+    """
+
+    @method_decorator(ensure_csrf_cookie)
+    def post(self, request, *args, **kwargs):  # pylint: disable=unused-argument, no-self-use
+        """
+        POST request handler.
+        receives email from request.
+        :param request: request object
+        :return JsonResponse with success or failure status
+        if the request is successful, verification email is sent.
+        """
+
+        if request.user.is_authenticated:
+            return JsonResponse({
+                'success': 'false', 'message': 'You are already logged in.'
+            })
+
+        if request.session.get('_id', None) is None:
+            return JsonResponse({
+                'success': 'false', 'message': 'Access Denied.'
+            })
+
+        _id = urlsafe_base64_decode(request.session.get('_id'))
+        user_model = get_user_model()
+        user_result = user_model.objects.filter(id=_id)
+        if user_result.exists():
+            user = user_result[0]
+            if user.is_active:
+                if user.is_email_verified:
+                    return JsonResponse({
+                        'success': 'false', 'message': 'You are already verified.'
+                    })
+
+                send_email_verification_mail(request, user)
+                return JsonResponse({
+                    'success': 'true', "message": "Verification email was sent to your inbox."
+                })
+
+        return JsonResponse({'success': 'false', 'message': "Access Denied."})

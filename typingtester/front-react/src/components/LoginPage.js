@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { Grid, Alert, Container } from "@mui/material";
+import React, { useState, useRef } from "react";
+import { Grid, Alert, Container, Button } from "@mui/material";
 import {
   handleRegistrationSubmission,
   handleLoginSubmission,
   handleResetPassword,
+  handleResendRequestForPasswordReset,
 } from "../lookups/auth";
 
 const LoginPage = () => {
   const [errors, setErrors] = useState([]);
-  const [info, setInfo] = useState([]);
+  const [info, setInfo] = useState([[], null]);
+  const resendButton = useRef();
   return (
     <>
       <Container maxWidth="sm">
@@ -18,8 +20,32 @@ const LoginPage = () => {
             {errorMessage}
           </Alert>
         ))}
-        {info.map((infoMessage, index) => (
-          <Alert severity="info" key={index} variant="filled">
+        {info[0].map((infoMessage, index) => (
+          <Alert
+            severity="info"
+            key={index}
+            variant="filled"
+            action={
+              info[1] !== null && (
+                <Button
+                  ref={resendButton}
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    if (info[1] === "reset") {
+                      handleResendRequestForPasswordReset();
+                    }
+                    resendButton.current.disabled = true;
+                    setTimeout(() => {
+                      resendButton.current.disabled = false;
+                    }, 60000);
+                  }}
+                >
+                  RESEND
+                </Button>
+              )
+            }
+          >
             {infoMessage}
           </Alert>
         ))}
@@ -37,7 +63,7 @@ const LoginPage = () => {
                   setErrors(errors);
                 },
                 (info) => {
-                  setInfo(info);
+                  setInfo([info, "reset"]);
                 }
               );
             }}
@@ -121,7 +147,7 @@ const LoginPage = () => {
                       setErrors(errors);
                     },
                     (info) => {
-                      setInfo(info);
+                      setInfo([info, null]);
                     }
                   );
                 }}

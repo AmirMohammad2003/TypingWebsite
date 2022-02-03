@@ -220,6 +220,20 @@ const handleChangePassword = async (
     .catch((error) => console.log(error));
 };
 
+const handleResendRequestForPasswordReset = async () => {
+  fetch("/auth/resend/verification/", {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": await getCsrfToken(),
+      Accept: "application/json",
+      HTTP_X_REQUESTED_WITH: "XMLHttpRequest",
+      "X-Requested-With": "XMLHttpRequest",
+    },
+    credentials: "include",
+  });
+  return true;
+};
+
 export {
   handleRegistrationSubmission,
   handleLoginSubmission,
@@ -227,4 +241,5 @@ export {
   handleResetPassword,
   handleResetPasswordConfirmation,
   handleChangePassword,
+  handleResendRequestForPasswordReset,
 };

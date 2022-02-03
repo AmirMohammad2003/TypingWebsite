@@ -7,6 +7,7 @@ import json
 from django.core import mail
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.utils.http import urlsafe_base64_encode
 
 
 class LoginAndLogoutTestCases(TestCase):
@@ -412,3 +413,56 @@ class ChangePasswordTestCases(TestCase):
         self.assertEqual(response.status_code, 200)
         _res = json.loads(response.content)
         self.assertEqual(_res['success'], 'false')
+
+
+class ResendVerificationEmail(TestCase):
+    """Test cases for resending verification email"""
+
+    def setUp(self):
+        self.user_model = get_user_model()
+        self.user = self.user_model.objects.create_user(
+            username='test', password='test', email='test@test.com')
+
+    def test_resend_verification_email_success(self):
+        """Test if the verification email is sent successfully"""
+        session = self.client.session
+        session['_id'] = urlsafe_base64_encode(str(self.user.id).encode())
+        session.save()
+        response = self.client.post('/auth/resend/verification/')
+        self.assertEqual(response.status_code, 200)
+        _res = json.loads(response.content)
+        self.assertEqual(_res['success'], 'true')
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_resend_verification_email_no_session_id(self):
+        """Test if the verification email is not sent successfully
+        because there is no session id"""
+        response = self.client.post('/auth/resend/verification/')
+        self.assertEqual(response.status_code, 200)
+        _res = json.loads(response.content)
+        self.assertEqual(_res['success'], 'false')
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_resend_verification_email_logged_in(self):
+        """Test if the verification email is not sent successfully
+        because the user is logged in"""
+        self.client.login(username='test', password='test')
+        response = self.client.post('/auth/resend/verification/')
+        self.assertEqual(response.status_code, 200)
+        _res = json.loads(response.content)
+        self.assertEqual(_res['success'], 'false')
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_resend_verification_email_already_verified(self):
+        """Test if the verification email is not sent successfully
+        because the user is already verified"""
+        self.user.is_email_verified = True
+        self.user.save()
+        session = self.client.session
+        session['_id'] = urlsafe_base64_encode(str(self.user.id).encode())
+        session.save()
+        response = self.client.post('/auth/resend/verification/')
+        self.assertEqual(response.status_code, 200)
+        _res = json.loads(response.content)
+        self.assertEqual(_res['success'], 'false')
+        self.assertEqual(len(mail.outbox), 0)

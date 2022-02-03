@@ -7,13 +7,10 @@ from django.urls import path
 from .views import (CheckIfAuthenticated, EmailVerificationView,
                     FetchUserInformation, LoginView, LogoutView,
                     PasswordChangeView, PasswordResetConfirmView,
-                    RegistrationView, ResetPasswordView)
+                    RegistrationView, ResendVerificationEmail,
+                    ResetPasswordView)
 
 app_name = 'accounts'  # pylint: disable=invalid-name
-
-# TODO:implement these views # pylint: disable=fixme
-# auth/ password_change/[name='password_change']
-# auth/ password_change/done/ [name='password_change_done']
 
 urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
@@ -28,4 +25,6 @@ urlpatterns = [
     path('user/info/', FetchUserInformation.as_view(), name='fetch_user_info'),
     path('password/change/', PasswordChangeView.as_view(),
          name='password_change'),
+    path('resend/verification/', ResendVerificationEmail.as_view(),
+         name='resend_verification'),
 ]

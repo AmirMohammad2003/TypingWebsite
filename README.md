@@ -17,7 +17,7 @@
   - [x] remember me in login page
   - [x] email verification
     - [x] email verification success page
-  - [ ] email verification resend
+  - [x] email verification resend
 
 - [x] password reset
 
@@ -35,6 +35,7 @@
 5. Improving Testing page
 6. About page
 7. Quote Submission
+8. rate limiting
 
 ## Installation and Usage
 

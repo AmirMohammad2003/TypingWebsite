@@ -1,19 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, createContext} from "react";
 import { Container } from "@mui/material";
-import { Outlet } from "react-router-dom";
+import {Outlet, useLocation, useNavigate} from "react-router-dom";
 import { IconButtonLink } from "./smallComponents";
 import { isAuthenticated } from "../lookups/lookups";
 import { handleLogoutSubmission } from "../lookups/auth";
 
+
+export const UserContext = createContext([[false, null], () => {}])
+
 export default () => {
   const [authenticated, setAuthenticated] = useState([false, null]); // authenticated[1] : username
+  const navigate = useNavigate()
+  const location = useLocation()
+
   useEffect(() => {
     (async () => {
       setAuthenticated(await isAuthenticated());
     })();
   }, []);
   return (
-    <>
+    <UserContext.Provider value={[authenticated, setAuthenticated]}>
       <Container maxWidth="lg">
         <div className="wrapper-flex">
           <div className="center-content">
@@ -37,7 +43,9 @@ export default () => {
                       e.preventDefault();
                       handleLogoutSubmission();
                       setAuthenticated([false, null]);
-                      window.location.href = "/";
+                      if (location.pathname !== '/') {
+                        navigate("/")
+                      }
                     }}
                   />
                 )}
@@ -51,6 +59,6 @@ export default () => {
           </div>
         </div>
       </Container>
-    </>
+    </UserContext.Provider>
   );
 };

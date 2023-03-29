@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, {useState, useRef, useContext} from "react";
 import { Grid, Alert, Container, Button } from "@mui/material";
 import {
   handleRegistrationSubmission,
@@ -6,20 +6,27 @@ import {
   handleResetPassword,
   handleResendRequestForPasswordReset,
 } from "../lookups/auth";
+import {useNavigate} from "react-router-dom";
+import {UserContext} from "./Base";
 
 const LoginPage = () => {
   const [errors, setErrors] = useState([]);
   const [info, setInfo] = useState([[], null]);
   const resendButton = useRef();
+  const navigate = useNavigate()
+  const [authenticated, setAuthenticated] = useContext(UserContext)
   return (
     <>
       <Container maxWidth="sm">
         {/* TODO make this guy a component */}
-        {errors.map((errorMessage, index) => (
+        {errors.map((errorMessage, index) => {
+          console.log(errorMessage)
+          return (
           <Alert severity="error" key={index} variant="filled">
             {errorMessage}
           </Alert>
-        ))}
+        )})}
+
         {info[0].map((infoMessage, index) => (
           <Alert
             severity="info"
@@ -60,10 +67,20 @@ const LoginPage = () => {
               handleRegistrationSubmission(
                 e,
                 (errors) => {
-                  setErrors(errors);
+                  let errs = []
+                  if (typeof errors === "object") {
+                    Object.keys(errors).forEach((key) => {
+                      errs.push(key + ": " + errors[key])
+                    })
+                    setErrors(errs)
+                  } else {
+                    setErrors(errors);
+                  }
                 },
                 (info) => {
-                  setInfo([info, "reset"]);
+                  // setInfo([info, "reset"]);
+                  setAuthenticated([true, info['username']])
+                  navigate('/')
                 }
               );
             }}
@@ -115,8 +132,9 @@ const LoginPage = () => {
                 (errors) => {
                   setErrors(errors);
                 },
-                () => {
-                  window.location.replace = "/";
+                (username) => {
+                  setAuthenticated([true, username])
+                  navigate('/')
                 }
               );
             }}

@@ -2,9 +2,8 @@
 Views used for the API.
 """
 
-from django.middleware.csrf import get_token
+
 from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -21,7 +20,6 @@ class LoadQuote(APIView):
     Loads a random quote from the database.
     """
 
-    @method_decorator(csrf_exempt)
     def get(self, request):  # pylint: disable=unused-argument, no-self-use
         """
         get a random quote.
@@ -36,23 +34,6 @@ class LoadQuote(APIView):
         return Response(response, status=status.HTTP_200_OK)
 
 
-class CsrfRequest(APIView):
-    """
-    CsrfRequest
-    Returns a CSRF token.
-    """
-
-    @method_decorator(ensure_csrf_cookie)
-    def get(self, request):  # pylint: disable=no-self-use
-        """
-        get the CSRF token.
-        :param request:
-        :return: the CSRF token.
-        """
-
-        return Response({'token': get_token(request)}, status=status.HTTP_200_OK)
-
-
 class StartedTest(APIView):
     """
     StartedTest
@@ -63,7 +44,6 @@ class StartedTest(APIView):
 
     permission_classes = (IsAuthenticated,)
 
-    @method_decorator(ensure_csrf_cookie)
     def post(self, request):  # pylint: disable=no-self-use
         """
         :param request:
@@ -86,7 +66,6 @@ class CompletedTest(APIView):
 
     permission_classes = (IsAuthenticated,)
 
-    @method_decorator(ensure_csrf_cookie)
     def post(self, request):  # pylint: disable=no-self-use
         """
         :param request:
@@ -110,7 +89,6 @@ class UpdateTotalTestsTime(APIView):
 
     permission_classes = (IsAuthenticated,)
 
-    @method_decorator(ensure_csrf_cookie)
     def post(self, request):   # pylint: disable=no-self-use
         """
         :param request:
@@ -144,7 +122,7 @@ class InsertUserTest(APIView):
 
     permission_classes = (IsAuthenticated,)
 
-    @method_decorator(ensure_csrf_cookie)
+
     def post(self, request):  # pylint: disable=no-self-use
         """
         :param request:
@@ -199,7 +177,6 @@ class LoadStatistics(APIView):
 
     permission_classes = (IsAuthenticated,)
 
-    @method_decorator(ensure_csrf_cookie)
     def post(self, request):  # pylint: disable=no-self-use
         """
         :param request:

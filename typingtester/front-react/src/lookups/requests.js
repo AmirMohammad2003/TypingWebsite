@@ -1,10 +1,8 @@
-import { getCsrfToken } from "./lookups";
-
 const updateStartedTests = async () => {
   const requestOptions = {
     method: "POST",
     headers: {
-      "X-CSRFtoken": await getCsrfToken(),
+
       Accept: "application/json",
     },
   };
@@ -23,7 +21,7 @@ const updateCompletedTests = async () => {
   const requestOptions = {
     method: "POST",
     headers: {
-      "X-CSRFtoken": await getCsrfToken(),
+
       Accept: "application/json",
     },
   };
@@ -43,7 +41,7 @@ const updateTotalTestsTime = async (time) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-CSRFtoken": await getCsrfToken(),
+
       Accept: "application/json",
     },
     body: JSON.stringify({ time: time }),
@@ -64,7 +62,7 @@ const SendTestRecordData = async (quote_id, time, cpm, acc) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-CSRFtoken": await getCsrfToken(),
+
       Accept: "application/json",
     },
     body: JSON.stringify({

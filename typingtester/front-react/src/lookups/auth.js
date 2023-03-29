@@ -1,4 +1,4 @@
-import { getCsrfToken, isAuthenticatedStrict } from "./lookups";
+import { isAuthenticatedStrict } from "./lookups";
 
 const handleLoginSubmission = async (
   e,
@@ -15,7 +15,6 @@ const handleLoginSubmission = async (
   const requestOptions = {
     method: "POST",
     headers: {
-      "X-CSRFToken": await getCsrfToken(),
       Accept: "application/json",
       HTTP_X_REQUESTED_WITH: "XMLHttpRequest",
       "X-Requested-With": "XMLHttpRequest",
@@ -23,14 +22,18 @@ const handleLoginSubmission = async (
     credentials: "include",
     body: data,
   };
-  fetch("/auth/login/", requestOptions)
+  fetch("/auth/v2/login/", requestOptions)
     .then((response) => response.json())
     .then((data) => {
-      if (data["success"] === "true") {
-        sessionStorage.setItem("username", data["username"]);
-        successCallback();
-      } else if (data["success"] === "false") {
-        updateErrorsCallback([data["message"]]);
+      if ('access_token' in data) {
+        console.log(data)
+        successCallback(data['user']['username']);
+      } else  {
+        if ('non_field_errors' in data) {
+          updateErrorsCallback([data["non_field_errors"]]);
+        } else {
+          updateErrorsCallback(["Something went wrong please try again later."]);
+        }
       }
     })
     .catch((error) => console.error(error));
@@ -57,7 +60,6 @@ const handleRegistrationSubmission = async (
   const requestOptions = {
     method: "POST",
     headers: {
-      "X-CSRFToken": await getCsrfToken(),
       Accept: "application/json",
       HTTP_X_REQUESTED_WITH: "XMLHttpRequest",
       "X-Requested-With": "XMLHttpRequest",
@@ -65,32 +67,27 @@ const handleRegistrationSubmission = async (
     credentials: "include",
     body: data,
   };
-  fetch("/auth/register/", requestOptions)
+  fetch("/auth/v2/registration/", requestOptions)
     .then((response) => response.json())
     .then((data) => {
-      if (data["success"] === "unknown") {
-        successCallback([data["message"]]);
-      } else if (data["success"] === "false") {
-        updateErrorsCallback(data["errors"]);
+      if ("user" in data) {
+        successCallback(data['user']);
+      } else {
+        updateErrorsCallback(data);
       }
     })
     .catch((error) => console.log(error));
 };
 
 const handleLogoutSubmission = async () => {
-  const [authenticated, username] = await isAuthenticatedStrict();
-  if (authenticated === true) {
-    fetch("/auth/logout/", {
-      method: "POST",
-      headers: {
-        "X-CSRFToken": await getCsrfToken(),
-        Accept: "application/json",
-        HTTP_X_REQUESTED_WITH: "XMLHttpRequest",
-        "X-Requested-With": "XMLHttpRequest",
-      },
-    });
-  }
-  sessionStorage.removeItem("username");
+  fetch("/auth/v2/logout/", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      HTTP_X_REQUESTED_WITH: "XMLHttpRequest",
+      "X-Requested-With": "XMLHttpRequest",
+    },
+  });
   return true;
 };
 
@@ -109,7 +106,6 @@ const handleResetPassword = async (
   const requestOptions = {
     method: "POST",
     headers: {
-      "X-CSRFToken": await getCsrfToken(),
       Accept: "application/json",
       HTTP_X_REQUESTED_WITH: "XMLHttpRequest",
       "X-Requested-With": "XMLHttpRequest",
@@ -117,7 +113,7 @@ const handleResetPassword = async (
     credentials: "include",
     body: data,
   };
-  fetch("/auth/reset/", requestOptions)
+  fetch("/auth/v2/reset/", requestOptions)
     .then((response) => response.json())
     .then((data) => {
       if (data["success"] === "true") {
@@ -153,7 +149,6 @@ const handleResetPasswordConfirmation = async (
   const requestOptions = {
     method: "POST",
     headers: {
-      "X-CSRFToken": await getCsrfToken(),
       Accept: "application/json",
       HTTP_X_REQUESTED_WITH: "XMLHttpRequest",
       "X-Requested-With": "XMLHttpRequest",
@@ -161,7 +156,7 @@ const handleResetPasswordConfirmation = async (
     credentials: "include",
     body: data,
   };
-  fetch("/auth/reset/confirm/", requestOptions)
+  fetch("/auth/v2/reset/confirm/", requestOptions)
     .then((response) => response.json())
     .then((data) => {
       console.log(data);
@@ -199,7 +194,6 @@ const handleChangePassword = async (
   const requestOptions = {
     method: "POST",
     headers: {
-      "X-CSRFToken": await getCsrfToken(),
       Accept: "application/json",
       HTTP_X_REQUESTED_WITH: "XMLHttpRequest",
       "X-Requested-With": "XMLHttpRequest",
@@ -207,7 +201,7 @@ const handleChangePassword = async (
     credentials: "include",
     body: data,
   };
-  fetch("/auth/password/change/", requestOptions)
+  fetch("/auth/v2/password/change/", requestOptions)
     .then((response) => response.json())
     .then((data) => {
       console.log(data);
@@ -221,10 +215,9 @@ const handleChangePassword = async (
 };
 
 const handleResendRequestForPasswordReset = async () => {
-  fetch("/auth/resend/verification/", {
+  fetch("/auth/v2/resend/verification/", {
     method: "POST",
     headers: {
-      "X-CSRFToken": await getCsrfToken(),
       Accept: "application/json",
       HTTP_X_REQUESTED_WITH: "XMLHttpRequest",
       "X-Requested-With": "XMLHttpRequest",

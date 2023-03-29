@@ -1,4 +1,6 @@
-const Word = ({ word, wordState, cursor }) => {
+import { memo } from 'react';
+
+const Word = memo(({ word, wordState, cursor }) => {
   let cursor_index = -2;
   if (cursor === true) {
     cursor_index = word.length === wordState.length ? -1 : wordState.length;
@@ -38,6 +40,6 @@ const Word = ({ word, wordState, cursor }) => {
       )) || <span className={cursor_index === -1 ? "cursor" : ""}>&nbsp;</span>}
     </div>
   );
-};
+});
 
 export default Word;

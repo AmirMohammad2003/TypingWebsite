@@ -78,9 +78,7 @@ const LoginPage = () => {
                   }
                 },
                 (info) => {
-                  // setInfo([info, "reset"]);
-                  setAuthenticated([true, info['username']])
-                  navigate('/')
+                   setInfo([info, "reset"]);
                 }
               );
             }}

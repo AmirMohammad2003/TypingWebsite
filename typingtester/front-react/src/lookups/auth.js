@@ -70,8 +70,8 @@ const handleRegistrationSubmission = async (
   fetch("/auth/v2/registration/", requestOptions)
     .then((response) => response.json())
     .then((data) => {
-      if ("user" in data) {
-        successCallback(data['user']);
+      if ("detail" in data) {
+        successCallback([data['detail']]);
       } else {
         updateErrorsCallback(data);
       }
@@ -215,7 +215,7 @@ const handleChangePassword = async (
 };
 
 const handleResendRequestForPasswordReset = async () => {
-  fetch("/auth/v2/resend/verification/", {
+  fetch("/auth/v2/registration/resend-email/", {
     method: "POST",
     headers: {
       Accept: "application/json",

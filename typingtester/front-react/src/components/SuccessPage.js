@@ -5,7 +5,7 @@ export default () => {
   const params = useParams();
   const navigate = useNavigate();
   // TODO going to change how this guy works i don't like to hard code anything in the frontend
-  //
+
   return (
     <>
       <div

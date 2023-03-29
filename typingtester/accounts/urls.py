@@ -10,7 +10,6 @@ from .views import (CheckIfAuthenticated, EmailVerificationView,
                     RegistrationView, ResendVerificationEmail,
                     ResetPasswordView, EmailConfirmView)
 
-app_name = 'accounts'  # pylint: disable=invalid-name
 urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
@@ -27,6 +26,6 @@ urlpatterns = [
     path('resend/verification/', ResendVerificationEmail.as_view(),
          name='resend_verification'),
     path('v2/', include('dj_rest_auth.urls')),
+    path('v2/registration/account-confirm-email/<str:key>/', EmailConfirmView.as_view(), name='confirm_email'),
     path('v2/registration/', include('dj_rest_auth.registration.urls')),
-    path('v2/registration/account-confirm-email/<token>/', EmailConfirmView.as_view(), name='account_confirm_email')
 ]

@@ -8,7 +8,7 @@ colorama==0.4.4
 cryptography==40.0.1
 defusedxml==0.7.1
 dj-rest-auth==3.0.0
-Django==4.1.7
+Django==4.1.9
 django-allauth==0.52.0
 django-cors-headers==3.14.0
 django-mailer==2.1
